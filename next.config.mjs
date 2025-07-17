@@ -1,4 +1,18 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {};
 
-export default nextConfig;
+
+export default {
+  experimental: {
+    optimizePackageImports: ["@chakra-ui/react"],
+  },
+  async redirects() {
+    return [
+      {
+        source: '/',
+        destination: '/dashboard',
+        permanent: true,
+      },
+    ];
+  }
+};
+
