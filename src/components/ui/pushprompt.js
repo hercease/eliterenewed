@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
+import { toaster } from "@/components/ui/toaster"
 
 export default function PushPrompt({ user }) {
   useEffect(() => {
@@ -50,6 +51,14 @@ async function askPermissionAndSubscribe(user) {
     }
   } catch (err) {
     console.error('Failed to register push subscription:', err);
+    toaster.create({
+      title: 'Error',
+      description: 'Failed to register push subscription:', err,
+      duration: 5000,
+      type: 'error',
+      isClosable: true,
+    });
+
   }
 }
 
