@@ -14,7 +14,6 @@ import {
   Button,
   Portal,
   CloseButton,
-  Link,
   HStack,
   Icon,
   Grid, GridItem, Stack, Badge, Tag, defineStyle, Spinner
@@ -42,6 +41,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation' // For App Router
 import { Suspense } from 'react'
 import { toaster } from "@/components/ui/toaster"
+import Link from 'next/link'
 
 import dynamic from 'next/dynamic'
 
@@ -60,9 +60,9 @@ export default function DashboardComponent({user}) {
   const [userdetails, setUserDetails] = useState(null)
   
   const service = [
-    { label: 'Airtime', icon: <FiSmartphone />, color: 'blue', path: '/airtime' },
-    { label: 'Data', icon: <FiWifi />, color: 'green', path: '/data' },
-    { label: 'Cable', icon: <FiTv />, color: 'orange', path: '/cable' },
+    { label: 'Airtime', icon: <FiSmartphone />, color: 'blue', path: '/airtimerecharge' },
+    { label: 'Data', icon: <FiWifi />, color: 'green', path: '/datarecharge' },
+    { label: 'Cable', icon: <FiTv />, color: 'orange', path: '/cabletv' },
     { label: 'Electricity', icon: <FiZap />, color: 'yellow', path: '/electricity' },
     { label: 'Education', icon: <FiBook />, color: 'purple', path: '/education' },
   ]
@@ -215,6 +215,7 @@ useEffect(() => {
               icon={service.icon}
               label={service.label}
               color={service.color}
+              path={service.path}
             />
            ))}
           
@@ -514,7 +515,7 @@ function ServiceItem({ icon, label, color, path }) {
               _hover={{ textDecoration: 'none' }}
               display="block"
             >
-      <Avatar.Root variant="" css={ringCss}>
+      <Avatar.Root mb={2} variant="" css={ringCss}>
           <Avatar.Fallback size="md"  color={`${color}.600`}>{icon}</Avatar.Fallback>
       </Avatar.Root>
       <Text fontSize="sm" color="black" fontWeight="medium">{label}</Text>

@@ -26,7 +26,7 @@ import {
   CloseButton
 } from '@chakra-ui/react'
 import { useState, useEffect, useMemo } from 'react'
-import { FiPhone } from 'react-icons/fi'
+import { FiPhone, FiWifi } from 'react-icons/fi'
 import { toaster } from "@/components/ui/toaster"
 import { useColorModeValue } from "@/components/ui/color-mode"
 import NavBar from '@/components/ui/sidebar'
@@ -257,10 +257,23 @@ const baseNetworks = useMemo(() => createListCollection({ items: baseNetworksDat
       bgSize="auto">
       <NavBar isAdmin={userdetails?.data.isAdmin} name={userdetails?.data.username} />
       <Box p={6} color="black">
-        <Flex justify="space-between" align="center" mb={8}>
-          <Heading size="lg">Data Recharge</Heading>
+
+        <Flex justify="space-between" align="center" mb={3}>
+          <Heading color="black" size="lg">
+            <HStack spacing={2}>
+              <FiWifi />  Data Recharge
+            </HStack>
+          </Heading>
         </Flex>
-      <Box maxW="lg" placeSelf="center">
+        
+      <Box 
+        w="full"
+        maxW={{ base: "95%", md: "500px", lg: "640px" }}
+        mx="auto"
+        mt={{ base: 4, md: 8 }}
+        p={{ base: 4, md: 6 }}
+        borderRadius="md" placeSelf="center"
+      >
               <Dialog.Root
                   key="center"
                   placement="center"
@@ -326,8 +339,7 @@ const baseNetworks = useMemo(() => createListCollection({ items: baseNetworksDat
             <Field.Root>
               <Select.Root
                 collection={baseNetworks}
-                size="sm"
-                minWidth="320px"
+                size="md"
                 {...register("network", { required: "Select network" })}
                 onValueChange={(details) => {
                   const selected = baseNetworks.items.find(item => item.value === details.value[0])
@@ -373,8 +385,7 @@ const baseNetworks = useMemo(() => createListCollection({ items: baseNetworksDat
             <Field.Root>
               <Select.Root
                 collection={networks}
-                size="sm"
-                minWidth="320px"
+                size="md"
                 {...register("plan", { required: "Select data plan" })}
                 onValueChange={(details) => {
                   const selected = networks.items.find(item => item.value === details.value[0])
@@ -421,6 +432,7 @@ const baseNetworks = useMemo(() => createListCollection({ items: baseNetworksDat
                   color="black"
                   borderColor="#9ca3af"
                   type="tel"
+                  size="md"
                   {...register("phone", { required: true, minLength: 11, maxLength: 11 })}
                 />
               </InputGroup>

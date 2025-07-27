@@ -23,14 +23,24 @@ export default async function RootLayout({ children }) {
   const token = cookieStore.get('elitetoken')?.value;
 
   return (
-    <html className={`${geistSans.variable} ${geistMono.variable}`} suppressHydrationWarning lang="en">
+      <html className={`${geistSans.variable} ${geistMono.variable}`} suppressHydrationWarning lang="en">
+      <head>
+        {/* PWA Manifest */}
+        <link rel="manifest" href="/manifest.json" />
+        {/* iOS Support */}
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content="Elite App" />
+        <link rel="apple-touch-icon" href="/icons/ios/192.png" />
+        <meta name="theme-color" content="#ffffff" />
+      </head>
       <body>
         <Suspense fallback={<div>Loading......</div>}>
-        <PushPrompt user={token} />
-        <Provider theme={theme}>
-          <Toaster />
-          {children}
-        </Provider>
+          <PushPrompt user={token} />
+          <Provider theme={theme}>
+            <Toaster />
+            {children}
+          </Provider>
         </Suspense>
       </body>
     </html>
