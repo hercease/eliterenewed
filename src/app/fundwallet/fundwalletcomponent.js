@@ -39,8 +39,8 @@ export default function FundWalletComponent({ user }) {
   const [showNew, setShowNew] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const [maxAmount, setMaxAmount] = useState(0)
   const [userdetails, setUserDetails] = useState(null)
+  const [maxAmount, setMaxAmount] = useState(userdetails?.virtual_account.status > 0 ? 20000 : 5000)
   const { register, formState: { errors }, handleSubmit, getValues, reset, watch } = useForm({ mode: 'onChange' })
   const router = useRouter();
     
@@ -61,7 +61,7 @@ export default function FundWalletComponent({ user }) {
     
               const resp = await res.json();
               setUserDetails(resp);
-              userdetails?.virtual_account.status > 0 ? setMaxAmount(20000) : setMaxAmount(5000);
+              ;
               console.log(resp);
     
           }
