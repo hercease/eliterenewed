@@ -106,6 +106,7 @@ export default function KycComponent({ user }) {
             formData.append('account_number', data.account_number);
             formData.append('bank_code', data.bank_code);
             formData.append('bvn', data.bvn);
+            formData.append('username', user);
     
             const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/createvirtualwallet`, {
                 method: 'POST',
