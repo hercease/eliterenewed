@@ -75,6 +75,7 @@ useEffect(() => {
 
   setIsLoading(true)
 
+
   Promise.all([
     fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/fetchdashboardstats`, {
       method: 'POST',

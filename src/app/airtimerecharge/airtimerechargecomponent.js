@@ -227,7 +227,7 @@ export default function AirtimeRechargeComponent({user}) {
 
   const handleConfirmedSubmit = async (data) => { 
       setOpen(false);
-      setLoading(true);
+      setIsLoading(true);
       const formData = new URLSearchParams()
       formData.append('network_name', selectedNetwork?.label)
       formData.append('network_code', selectedNetwork?.product_id)
@@ -244,7 +244,7 @@ export default function AirtimeRechargeComponent({user}) {
         body: formData.toString(),
       });
 
-      setLoading(false);
+      setIsLoading(false);
 
       if (!res.ok) {
         const text =  res.text();
@@ -362,7 +362,13 @@ export default function AirtimeRechargeComponent({user}) {
                     </Portal>
                   </Dialog.Root>
 
-    <Box placeSelf="center">
+    <Box w="full"
+  maxW={{ base: "95%", md: "500px", lg: "640px" }}
+  mx="auto"
+  mt={{ base: 4, md: 8 }}
+  p={{ base: 4, md: 6 }}
+  borderRadius="md"
+  >
         <form onSubmit={handleSubmit(onSubmit)}>
 
           <Stack mb="2" spacing={2}>
@@ -385,7 +391,6 @@ export default function AirtimeRechargeComponent({user}) {
             <Select.Root
               collection={networks}
               size="sm"
-              minWidth="320px"
               positioning={{ sameWidth: true }}
               defaultValue=""
               onValueChange={(details) => {
@@ -445,7 +450,7 @@ export default function AirtimeRechargeComponent({user}) {
             background="#0060d1"
             color="white"
             type="submit"
-            loading={loading}
+            loading={isLoading}
             size="md"
             w="full"
           >
