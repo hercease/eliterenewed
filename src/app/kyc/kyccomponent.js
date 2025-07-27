@@ -288,7 +288,7 @@ export default function KycComponent({ user }) {
             background="#0060d1"
             color="white"
             type="submit"
-            isLoading={isLoading}
+            loading={isLoading}
             size="md"
             w="full"
           >
