@@ -178,10 +178,10 @@ export default function KycComponent({ user }) {
         </Flex>
 
         {userdetails?.virtual_account.status == 0 && userdetails?.virtual_account.reason != "" && (
-          <Alert.Root status="error">
+          <Alert.Root mb={4} status="info">
             <Alert.Indicator />
             <Alert.Content>
-              <Alert.Title>Error</Alert.Title>
+              <Alert.Title>Info</Alert.Title>
               <Alert.Description>
                 {userdetails?.virtual_account.reason}
               </Alert.Description>
