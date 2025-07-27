@@ -288,23 +288,14 @@ export default function AirtimeRechargeComponent({user}) {
   return (
     <Box 
       minH="100vh" 
-      bg="gray.50"
+      bg="white"
       bgImage="url('https://www.transparenttextures.com/patterns/exclusive-paper.png')"
       bgRepeat="repeat"
       bgSize="auto"
     >
       <NavBar isAdmin={userdetails?.data.isAdmin} name={userdetails?.data.username} />
-      <Box p={6} color="black">
 
-        <Flex justify="space-between" align="center" mb={3}>
-          <Heading color="black" size="lg">
-            <HStack spacing={2}>
-              <FiSmartphone />
-              Airtime Recharge
-            </HStack>
-          </Heading>
-        </Flex>
-
+      
                 <Dialog.Root
                     key="center"
                     placement="center"
@@ -361,14 +352,28 @@ export default function AirtimeRechargeComponent({user}) {
                       </Dialog.Positioner>
                     </Portal>
                   </Dialog.Root>
+                  
+      <Box  
+      color="black"
+        w="full"
+        maxW={{ base: "95%", md: "500px", lg: "640px" }}
+        mx="auto"
+        mt={{ base: 4, md: 8 }}
+        p={{ base: 4, md: 6 }}
+        borderRadius="md"
+      >
 
-    <Box w="full"
-  maxW={{ base: "95%", md: "500px", lg: "640px" }}
-  mx="auto"
-  mt={{ base: 4, md: 8 }}
-  p={{ base: 4, md: 6 }}
-  borderRadius="md"
-  >
+        <Flex justify="space-between" align="center" mb={3}>
+          <Heading color="black" size="lg">
+            <HStack spacing={2}>
+              <FiSmartphone />
+              Airtime Recharge
+            </HStack>
+          </Heading>
+        </Flex>
+
+
+
         <form onSubmit={handleSubmit(onSubmit)}>
 
           <Stack mb="2" spacing={2}>
@@ -383,6 +388,7 @@ export default function AirtimeRechargeComponent({user}) {
                   {...register("amount",{ required: "Enter airtime amount", min:100, max:5000  })} 
                 />
               </InputGroup>
+               <Field.HelperText color="blue">Wallet Balance : ₦{userdetails?.data.account_balance?.toLocaleString()}</Field.HelperText>
               <Field.HelperText color="red">{errors.amount?.message}</Field.HelperText>
               {errors.amount?.type === 'min' && <Field.HelperText color="red"> Minimum amount buyable is &#8358; 100 </Field.HelperText>}
               {errors.amount?.type === 'max' && <Field.HelperText color="red"> Maximum amount buyable is &#8358; 5000 </Field.HelperText>}
@@ -399,6 +405,7 @@ export default function AirtimeRechargeComponent({user}) {
                 );
                 setSelectedNetwork(selected);
               }}
+              className="dark"
             >
               <Select.HiddenSelect />
               <Select.Label>Select Network</Select.Label>
@@ -459,6 +466,5 @@ export default function AirtimeRechargeComponent({user}) {
         </form>
       </Box>
       </Box>
-    </Box>
   )
 }

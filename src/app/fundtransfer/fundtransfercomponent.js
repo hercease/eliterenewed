@@ -11,7 +11,7 @@ import {
   InputRightElement,
   Button,
   DataList,
-  Icon,
+  HStack,
   Portal,
   Field,
   Stack,
@@ -23,11 +23,10 @@ import NavBar from '@/components/ui/sidebar'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
 import { useForm  } from 'react-hook-form'
-const FiUser = dynamic(() =>
-  import('react-icons/fi').then(mod => mod.FiUser), {
-  ssr: false,
-  loading: () => null
-})
+import {
+  FiUser,
+  FiCreditCard,
+} from 'react-icons/fi'
 
 export default function FundTransferComponent({user}) {
 
@@ -58,7 +57,7 @@ export default function FundTransferComponent({user}) {
               const resp = await res.json();
               setUserDetails(resp);
     
-              //console.log(resp);
+              console.log(resp);
     
           }
     
@@ -91,7 +90,7 @@ export default function FundTransferComponent({user}) {
 
       setIsLoading(false);
 
-      if (!resp.ok) {
+      if (!res.ok) {
         const text =  resp.text();
           toaster.create({
               title: 'Error',
@@ -178,8 +177,13 @@ export default function FundTransferComponent({user}) {
         <NavBar isAdmin={userdetails?.data.isAdmin} name={userdetails?.data.username}  /> 
 
         <Box p={6} color="black">
-            <Flex justify="space-between" align="center" mb={8}>
-            <Heading size="lg">Transfer Wallet</Heading>
+
+            <Flex justify="space-between" align="center" mb={3}>
+              <Heading color="black" size="lg">
+                <HStack spacing={2}>
+                  <FiCreditCard /> Wallet Transfer 
+                </HStack>
+              </Heading>
             </Flex>
 
             <form onSubmit={handleSubmit(onSubmit)}>
@@ -191,6 +195,7 @@ export default function FundTransferComponent({user}) {
                         <InputGroup startElement="₦">
                             <Input placeholder="Enter Amount" color="black" borderColor="#9ca3af" {...register("amount",{ required: "Enter transfer amount" })}  />
                         </InputGroup>
+                        <Field.HelperText color="blue">Wallet Balance : ₦{userdetails?.data.account_balance?.toLocaleString()}</Field.HelperText>
                         <Field.HelperText color="red">{errors.amount?.message}</Field.HelperText>
                     </Field.Root>
 

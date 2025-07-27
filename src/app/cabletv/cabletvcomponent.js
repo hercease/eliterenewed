@@ -333,13 +333,21 @@ console.log(selectedNetwork);
 
     <Box 
       minH="100vh" 
-      bg="gray.50"
+      bg="white"
       bgImage="url('https://www.transparenttextures.com/patterns/exclusive-paper.png')"
       bgRepeat="repeat"
       bgSize="auto"
     >
       <NavBar isAdmin={userdetails?.data.isAdmin} name={userdetails?.data.username} />
-      <Box p={6} color="black">
+      <Box 
+        color="black"
+        w="full"
+        maxW={{ base: "95%", md: "500px", lg: "640px" }}
+        mx="auto"
+        mt={{ base: 4, md: 8 }}
+        p={{ base: 4, md: 6 }}
+        borderRadius="md"
+      >
 
         <Flex justify="space-between" align="center" mb={3}>
           <Heading color="black" size="lg">
@@ -350,7 +358,6 @@ console.log(selectedNetwork);
           </Heading>
         </Flex>
 
-        <Box W={500} placeSelf="center">
          <Dialog.Root
             key="center"
             placement="center"
@@ -469,6 +476,7 @@ console.log(selectedNetwork);
 
 
               }}
+              className="dark"
             >
               <Select.HiddenSelect />
               <Select.Label>Select Cable Network</Select.Label>
@@ -540,6 +548,7 @@ console.log(selectedNetwork);
                         )
                         setSelectedPlan(selected)
                     }}
+                    className="dark"
                     >
                         <Select.HiddenSelect />
                         <Select.Label>Select Plan</Select.Label>
@@ -603,6 +612,7 @@ console.log(selectedNetwork);
                     setselectedAddons(selected)
 
                   }}
+                  className="dark"
                 >
                   <Select.HiddenSelect />
                   <Select.Label>Add Addon (Optional)</Select.Label>
@@ -658,6 +668,5 @@ console.log(selectedNetwork);
         </form>
         </Box>
       </Box>
-    </Box>
   )
 }

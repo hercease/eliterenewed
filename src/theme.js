@@ -1,5 +1,6 @@
 // theme.ts
 import { defineConfig, extendTheme, ThemeConfig } from '@chakra-ui/react'
+import { BorderColor } from '@mui/icons-material'
 
 const colorModeConfig = {
   initialColorMode: 'light',        // or 'dark' if you prefer
@@ -34,13 +35,34 @@ const customTheme = defineConfig({
         },
       },
     },
+    Select: {
+      baseStyle: {
+        field: {
+          border: "1px solid",
+          borderColor: "gray.500",
+          borderRadius: "md",
+          _hover: {
+            borderColor: "blue.400",
+          },
+          _focus: {
+            borderColor: "blue.500",
+            boxShadow: "none",
+          },
+        },
+      },
+    },
     Input: {
       baseStyle: {
         field: {
           borderRadius: 'lg',
         },
       },
+      defaultProps: {
+        focusBorderColor: 'gray.500', // Applies to Input and Select
+        borderColor: 'gray.300', // Applies to Input and Select
+      },
     },
+
   },
 })
 

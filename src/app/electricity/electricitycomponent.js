@@ -22,6 +22,7 @@ import {
 import { useState, useEffect, useMemo } from 'react'
 import { toaster } from "@/components/ui/toaster"
 import NavBar from '@/components/ui/sidebar'
+import { useColorModeValue } from "@/components/ui/color-mode"
 import { useForm  } from 'react-hook-form'
 import dynamic from 'next/dynamic'
 import { FiSmartphone, FiZap } from "react-icons/fi"
@@ -71,7 +72,7 @@ export default function ElectricityComponent({user}) {
       ]);
 
       const networkDataJson = networkRes.ok ? await networkRes.json() : [];
-      console.log(networkDataJson);
+      //console.log(networkDataJson);
       const profileData = profileRes.ok ? await profileRes.json() : [];
 
       setNetworkData(networkDataJson);
@@ -276,13 +277,22 @@ export default function ElectricityComponent({user}) {
   return (
     <Box  
       minH="100vh" 
-      bg="gray.50"
+      bg="white"
       bgImage="url('https://www.transparenttextures.com/patterns/exclusive-paper.png')"
       bgRepeat="repeat"
       bgSize="auto"
     >
       <NavBar isAdmin={userdetails?.data.isAdmin} name={userdetails?.data.username} />
-      <Box p={6} color="black">
+      <Box 
+        color="black"
+        w="full"
+        maxW={{ base: "95%", md: "500px", lg: "640px" }}
+        mx="auto"
+        mt={{ base: 4, md: 8 }}
+        p={{ base: 4, md: 6 }}
+        borderRadius="md"
+      >
+
         <Flex justify="space-between" align="center" mb={3}>
           <Heading color="black" size="lg">
             <HStack spacing={2}>
@@ -291,6 +301,7 @@ export default function ElectricityComponent({user}) {
             </HStack>
           </Heading>
         </Flex>
+
             {networks && (
                 <Dialog.Root
                     key="center"
@@ -370,6 +381,7 @@ export default function ElectricityComponent({user}) {
                 );
                 setSelectedNetwork(selected);
               }}
+              className="dark"
             >
               <Select.HiddenSelect />
               <Select.Label>Select Network</Select.Label>
@@ -448,6 +460,7 @@ export default function ElectricityComponent({user}) {
                   {...register("amount",{ required: "Enter amount to buy"  })} 
                 />
               </InputGroup>
+              <Field.HelperText color="blue">Wallet Balance : ₦{userdetails?.data.account_balance?.toLocaleString()}</Field.HelperText>
               <Field.HelperText color="red">{errors.amount?.message}</Field.HelperText>
             </Field.Root>
 

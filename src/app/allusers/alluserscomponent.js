@@ -122,7 +122,7 @@ export default function UserManagement({ user }) {
           </Heading>
         </Flex>
 
-        <InputGroup mb={6} maxW="400px">
+        <InputGroup mb={6}>
           <Input
             placeholder="Search users..."
             value={searchTerm}
@@ -130,6 +130,7 @@ export default function UserManagement({ user }) {
               setSearchTerm(e.target.value)
               setCurrentPage(1)
             }}
+            className="dark"
           />
         </InputGroup>
 

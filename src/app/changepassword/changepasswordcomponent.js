@@ -118,7 +118,14 @@ export default function ChangePasswordComponent({user}) {
       >
         <NavBar isAdmin={userdetails?.data.isAdmin} name={userdetails?.data.username} /> 
 
-        <Box p={6} color="black">
+        <Box 
+          p={6}
+          w="full"
+          maxW={{ base: "95%", md: "500px", lg: "640px" }}
+          mx="auto"
+          mt={{ base: 4, md: 8 }}
+          borderRadius="md"
+        >
 
             <Flex justify="space-between" align="center" mb={3}>
               <Heading color="black" size="lg">
@@ -128,7 +135,6 @@ export default function ChangePasswordComponent({user}) {
               </Heading>
             </Flex>
             
-          <Box minW={{ base: "90%", md: "400px", lg: "500px" }} placeSelf="center">
             <form onSubmit={handleSubmit(onSubmit)}>
                 <Stack mb="2" spacing={2}>
                 <Field.Root id="presentpassword">
@@ -164,6 +170,5 @@ export default function ChangePasswordComponent({user}) {
             </form>
             </Box>
         </Box>
-    </Box> 
   )
 }

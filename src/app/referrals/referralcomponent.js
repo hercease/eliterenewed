@@ -179,7 +179,15 @@ export default function MyReferralsComponent({ user }) {
 
       <NavBar isAdmin={userdetails?.data.isAdmin} name={userdetails?.data.username} />
 
-      <Box p={6}>
+      <Box 
+        color="black"
+        w="full"
+        maxW={{ base: "95%", md: "500px", lg: "640px" }}
+        mx="auto"
+        mt={{ base: 4, md: 8 }}
+        p={{ base: 4, md: 6 }}
+        borderRadius="md"
+      >
         <Flex justify="space-between" align="center" mb={3}>
           <Heading color="black" size="lg">
             <HStack spacing={2}>
@@ -190,11 +198,12 @@ export default function MyReferralsComponent({ user }) {
         </Flex>
 
         <Flex mb={6} gap={4} direction={{ base: 'column', md: 'row' }}>
-          <InputGroup flex="1" maxW={{ md: '400px' }}>
+          <InputGroup flex="1">
             <Input
               placeholder="Search your recruits..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
+              className='dark'
             />
           </InputGroup>
         </Flex>

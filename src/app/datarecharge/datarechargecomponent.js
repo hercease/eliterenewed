@@ -256,7 +256,16 @@ const baseNetworks = useMemo(() => createListCollection({ items: baseNetworksDat
       bgRepeat="repeat"
       bgSize="auto">
       <NavBar isAdmin={userdetails?.data.isAdmin} name={userdetails?.data.username} />
-      <Box p={6} color="black">
+      <Box 
+        w="full"
+        maxW={{ base: "95%", md: "500px", lg: "640px" }}
+        mx="auto"
+        mt={{ base: 4, md: 8 }}
+        p={{ base: 4, md: 6 }}
+        borderRadius="md" 
+        placeSelf="center"
+        color="black"
+      >
 
         <Flex justify="space-between" align="center" mb={3}>
           <Heading color="black" size="lg">
@@ -265,15 +274,8 @@ const baseNetworks = useMemo(() => createListCollection({ items: baseNetworksDat
             </HStack>
           </Heading>
         </Flex>
-        
-      <Box 
-        w="full"
-        maxW={{ base: "95%", md: "500px", lg: "640px" }}
-        mx="auto"
-        mt={{ base: 4, md: 8 }}
-        p={{ base: 4, md: 6 }}
-        borderRadius="md" placeSelf="center"
-      >
+
+     
               <Dialog.Root
                   key="center"
                   placement="center"
@@ -346,6 +348,7 @@ const baseNetworks = useMemo(() => createListCollection({ items: baseNetworksDat
                   fetchNetworkData(selected.value)
                   setSelectedNetwork(selected)
                 }}
+                className="dark"
               >
                 <Select.HiddenSelect />
                 <Select.Label>Select Network</Select.Label>
@@ -391,6 +394,7 @@ const baseNetworks = useMemo(() => createListCollection({ items: baseNetworksDat
                   const selected = networks.items.find(item => item.value === details.value[0])
                   setSelectedPlan(selected)
                 }}
+                className="dark"
               >
                 <Select.HiddenSelect />
                 <Select.Label>Select Plan</Select.Label>
@@ -436,7 +440,7 @@ const baseNetworks = useMemo(() => createListCollection({ items: baseNetworksDat
                   {...register("phone", { required: true, minLength: 11, maxLength: 11 })}
                 />
               </InputGroup>
-
+              <Field.HelperText color="blue">Wallet Balance : ₦{userdetails?.data.account_balance?.toLocaleString()}</Field.HelperText>
               {errors.phone?.type === 'required' && <Field.HelperText color="red">Phone number is required</Field.HelperText>}
               {errors.phone?.type === 'minLength' && <Field.HelperText color="red">Minimum 11 digits</Field.HelperText>}
               {errors.phone?.type === 'maxLength' && <Field.HelperText color="red">Maximum 11 digits</Field.HelperText>}
@@ -449,6 +453,5 @@ const baseNetworks = useMemo(() => createListCollection({ items: baseNetworksDat
         </form>
       </Box>
       </Box>
-    </Box>
   )
 }

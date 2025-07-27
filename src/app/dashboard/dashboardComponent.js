@@ -176,9 +176,14 @@ useEffect(() => {
       <NavBar isAdmin={userdetails?.data.isAdmin} name={userdetails?.data.username} />
 
       <Box p={4}>
-        <Heading color="black" size="lg" mb={6}>
-          Dashboard
-        </Heading>
+
+        <Flex justify="space-between" align="center" mb={3}>
+          <Heading color="black" size="lg">
+            <HStack spacing={2}>
+              <FiHome /> Dashboard 
+            </HStack>
+          </Heading>
+        </Flex>
 
         <Grid templateColumns={{ base: '1fr 1fr' }} gap={4}>
             {stats.map((stat, idx) => (

@@ -105,7 +105,7 @@ export default function LoginComponent() {
       px={4}
     >
        
-           <Flex flex="1" justify="center" align="center">
+        <Flex flex="1" justify="center" align="center">
             <Box w={{ base: '100%', sm: '400px' }} p={8} >
                 <Flex justify="flex-start" mb={4}>
                     <Box textAlign="right">
