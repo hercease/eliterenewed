@@ -91,6 +91,18 @@ export default function FundTransferComponent({user}) {
 
       setIsLoading(false);
 
+      if (!resp.ok) {
+        const text =  resp.text();
+          toaster.create({
+              title: 'Error',
+              description: `Server error ${resp.status}: ${text}`,
+              status: 'error',
+              duration: 5000,
+              type: "error"
+          })
+          return;
+      }
+
       if (resp.status) {
 
         toaster.create({ title: 'Success', description: resp?.message, type: 'success' });
@@ -104,7 +116,13 @@ export default function FundTransferComponent({user}) {
 
   return (
 
-      <Box minH="100vh" bg="gray.50">
+      <Box
+        minH="100vh" 
+        bg="gray.50"
+        bgImage="url('https://www.transparenttextures.com/patterns/exclusive-paper.png')"
+        bgRepeat="repeat"
+        bgSize="auto"
+      >
 
           <Dialog.Root
             key="center"

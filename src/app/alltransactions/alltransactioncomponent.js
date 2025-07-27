@@ -7,28 +7,23 @@ import {
   Input,
   InputGroup,
   Badge,
-  Select,
   HStack,
   Button,
   Icon,
   Text,
-  useDisclosure,
   Dialog,
-  Table,
   Portal,
-  createListCollection,
-  GridItem,
-  Grid,
   Avatar,
   Stack,
   CloseButton,
   VStack,
   DataList,
   ButtonGroup,
-  Spinner
+  Spinner,
+  useDisclosure
 } from '@chakra-ui/react'
 import {
-  FiSearch,
+  FiClock,
   FiChevronLeft,
   FiWifi,
   FiChevronRight,
@@ -37,183 +32,218 @@ import {
   FiTv,
   FiSmartphone,
 } from 'react-icons/fi'
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect, useCallback } from 'react'
 import NavBar from '@/components/ui/sidebar'
 import { toaster } from '@/components/ui/toaster'
 
-export default function TransactionComponent({ user }) {
+// Constants
+const TRANSACTIONS_PER_PAGE = 8
+const SERVICE_ICONS = {
+  Airtime: FiSmartphone,
+  Data: FiWifi,
+  Electricity: FiZap,
+  Education: FiBook,
+  Cable: FiTv,
+  Fund: FiTv,
+}
 
+const STATUS_COLORS = {
+  successful: 'green',
+  Successful: 'green',
+  Unsuccessful: 'red',
+  pending: 'orange',
+  failed: 'red',
+}
+
+export default function TransactionComponent({ user }) {
+  // State management
   const [searchTerm, setSearchTerm] = useState('')
-  const [open, setOpen] = useState(false)
   const [transactions, setTransactions] = useState([])
   const [isLoading, setIsLoading] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
-  const [transactionsPerPage, setTransactionsPerPage] = useState(8)
   const [totalTransactions, setTotalTransactions] = useState(0)
-  const [loading, setLoading] = useState(false)
-  const [selectedTransaction, setSelectedTransaction] = useState([])
+  const [selectedTransaction, setSelectedTransaction] = useState(null)
   const [userdetails, setUserDetails] = useState(null)
+  const [open, setOpen] = useState(false)
+  
+  // Dialog control
 
+  // Memoized query parameters
+  const queryParams = useMemo(() => ({
+    page: currentPage,
+    limit: TRANSACTIONS_PER_PAGE,
+    search: searchTerm,
+  }), [currentPage, searchTerm])
+
+  // Fetch user profile
   useEffect(() => {
+    if (!user) return
 
-    if (!user) return;
+    const fetchProfileInfo = async () => {
+      const formData = new URLSearchParams()
+      formData.append('username', user)
 
-      const fetchProfileInfo = async () => {
-          
-          const formData = new URLSearchParams()
-          formData.append('username', user)
-
-          const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/fetchprofileinfo`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: formData.toString(),
-          });
-
-          const resp = await res.json();
-          setUserDetails(resp);
-
-          console.log(resp);
-
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/fetchprofileinfo`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: formData.toString(),
+        })
+        const resp = await res.json()
+        setUserDetails(resp)
+      } catch (error) {
+        console.error('Failed to fetch profile:', error)
       }
+    }
 
-    fetchProfileInfo();
-  }, [user]);
+    fetchProfileInfo()
+  }, [user])
+
+  // Fetch transactions
+  const fetchTransactions = useCallback(async (params) => {
+    setIsLoading(true)
+    try {
+      const formData = new URLSearchParams()
+      formData.append('page', params.page)
+      formData.append('limit', params.limit)
+      formData.append('search', params.search)
+
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/fetchalltransactions`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: formData.toString(),
+      })
+
+      const data = await res.json()
+      if (data.status) {
+        setTransactions(data.data)
+        setTotalTransactions(data.total)
+      } else {
+        toaster.create({ 
+          title: 'Error', 
+          description: 'Failed to fetch transactions', 
+          type: 'error' 
+        })
+      }
+    } catch (error) {
+      console.error('Transaction fetch error:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [])
+
+  // Fetch transactions when params change
+  useEffect(() => {
+    fetchTransactions(queryParams)
+  }, [queryParams, fetchTransactions])
+
+  // Reset to page 1 when search changes
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [searchTerm])
+
+  // Helper components
+
+  const StatusBadge = ({ status }) => {
+      return (
+        <Badge colorPalette={STATUS_COLORS[status]} variant="solid" px={2} py={1} borderRadius="full">
+          {status}
+        </Badge>
+      )
+    }
+
+  const formatDate = (dateString) => {
+    if (!dateString) return 'N/A'
+    const date = new Date(dateString)
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    })
+  }
+
+  const formatDateWithOrdinal = (dateString) => {
+    if (!dateString) return 'N/A'
+    const date = new Date(dateString)
+    const day = date.getDate()
+    const month = date.toLocaleString('en-US', { month: 'long' })
+    const year = date.getFullYear()
+    
+    const getOrdinal = (n) => {
+      const s = ['th', 'st', 'nd', 'rd']
+      const v = n % 100
+      return n + (s[(v - 20) % 10] || s[v] || s[0])
+    }
+    
+    return `${getOrdinal(day)} ${month} ${year}`
+  }
 
   const handleCardClick = (transaction) => {
     setSelectedTransaction(transaction)
     setOpen(true)
   }
 
-  const frameworks = createListCollection({
-    items: [
-      { label: 'All Types', value: 'all' },
-      { label: 'Airtime', value: 'Airtime' },
-      { label: 'Data', value: 'Data' },
-      { label: 'Electricity', value: 'Electricity' },
-      { label: 'Cable', value: 'Cable' },
-    ],
-  })
-
-  const queryParams = useMemo(() => {
-    return {
-      page: currentPage,
-      limit: transactionsPerPage,
-      search: searchTerm,
-    };
-  }, [currentPage, transactionsPerPage, searchTerm]);
-
-  const fetchUsers = async (params) => {
-    setIsLoading(true);
-
-    try {
-      const formData = new URLSearchParams();
-      formData.append('page', params.page);
-      formData.append('limit', params.limit);
-      formData.append('search', params.search);
-
-      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/fetchalltransactions`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: formData.toString(),
-      });
-
-      const data = await res.json();
-      if (data.status) {
-        setTransactions(data.data);
-        setTotalTransactions(data.total);
-      } else {
-        toaster.create({ title: 'Error', description: 'Failed to fetch transactions', type: 'error' });
+  // Pagination logic
+  const totalPages = Math.ceil(totalTransactions / TRANSACTIONS_PER_PAGE)
+  const paginationRange = useMemo(() => {
+    const range = []
+    const maxVisiblePages = 3
+    
+    if (totalPages <= maxVisiblePages) {
+      for (let i = 1; i <= totalPages; i++) {
+        range.push(i)
       }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoading(false);
+    } else {
+      const half = Math.floor(maxVisiblePages / 2)
+      let start = Math.max(1, currentPage - half)
+      const end = Math.min(totalPages, start + maxVisiblePages - 1)
+      
+      if (end - start + 1 < maxVisiblePages) {
+        start = Math.max(1, end - maxVisiblePages + 1)
+      }
+      
+      for (let i = start; i <= end; i++) {
+        range.push(i)
+      }
     }
-  };
-
-  const totalPages = Math.ceil(totalTransactions / transactionsPerPage)
-
-  useEffect(() => {
-    setTransactions([]);
-    fetchUsers(queryParams);
-  }, [queryParams]);
-
-  // Reset to page 1 when search changes
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchTerm]);
-
-
-
-  const StatusBadge = ({ status }) => {
-    const colorScheme = {
-      successful: 'green',
-      Successful: 'green',
-      Unsuccessful: 'red',
-      pending: 'orange',
-      failed: 'red',
-    }[status]
-
-    return (
-      <Badge colorPalette={colorScheme} variant="solid" px={2} py={1} borderRadius="full">
-        {status}
-      </Badge>
-    )
-  }
-
-  const serviceIcons = {
-    Airtime: FiSmartphone,
-    Data: FiWifi,
-    Electricity: FiZap,
-    Education: FiBook,
-    Cable: FiTv,
-    Fund: FiTv,
-  }
-
-  const formatDateWithOrdinal = (dateString) => {
-    const date = new Date(dateString)
-    const day = date.getDate()
-    const month = date.toLocaleString('en-US', { month: 'long' })
-    const year = date.getFullYear()
-    const getOrdinal = (n) => {
-      const s = ['th', 'st', 'nd', 'rd']
-      const v = n % 100
-      return n + (s[(v - 20) % 10] || s[v] || s[0])
-    }
-    return `${getOrdinal(day)} ${month} ${year}`
-  }
-
-  const cardBg = 'gray.100'
+    
+    return range
+  }, [currentPage, totalPages])
 
   return (
-    <Box minH="100vh" bg="gray.50" color="black">
-
-        {isLoading && (
-              
-            <Flex
-              position="fixed"
-              top="0"
-              left="0"
-              right="0"
-              bottom="0"
-              bg="rgba(255, 255, 255, 0.8)"
-              align="center"
-              justify="center"
-              zIndex={9999}
-            >
-              <Spinner size="xl" />
-            </Flex>
-          
-        
-            )
-          }
-
+    <Box 
+      minH="100vh" 
+      bg="gray.50"
+      bgImage="url('https://www.transparenttextures.com/patterns/exclusive-paper.png')"
+      bgRepeat="repeat"
+      color="black"
+    >
+      {isLoading && (
+        <Flex
+          position="fixed"
+          top="0"
+          left="0"
+          right="0"
+          bottom="0"
+          bg="rgba(255, 255, 255, 0.8)"
+          align="center"
+          justify="center"
+          zIndex={9999}
+        >
+          <Spinner size="xl" />
+        </Flex>
+      )}
 
       <NavBar isAdmin={userdetails?.data.isAdmin} name={userdetails?.data.username} />
 
       <Box p={6}>
-        <Flex justify="space-between" align="center" mb={8}>
-          <Heading size="lg">All Transactions</Heading>
+        <Flex justify="space-between" align="center" mb={3}>
+          <Heading color="black" size="lg">
+            <HStack spacing={2}>
+              <FiClock /> 
+              <Text>All Transactions</Text>
+            </HStack>
+          </Heading>
         </Flex>
 
         <Flex mb={6} gap={4} direction={{ base: 'column', md: 'row' }}>
@@ -221,10 +251,7 @@ export default function TransactionComponent({ user }) {
             <Input
               placeholder="Search transactions..."
               value={searchTerm}
-              onChange={(e) => {
-                setSearchTerm(e.target.value)
-                setCurrentPage(1)
-              }}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
           </InputGroup>
         </Flex>
@@ -234,147 +261,148 @@ export default function TransactionComponent({ user }) {
             transactions.map((tx) => (
               <Flex
                 key={tx.id}
-                p={2}
-                bg={cardBg}
+                p={3}
+                bg="gray.100"
                 borderRadius="lg"
                 borderWidth="1px"
                 align="center"
                 fontSize="sm"
+                cursor="pointer"
+                _hover={{ bg: 'gray.200' }}
+                transition="background 0.2s"
                 onClick={() => handleCardClick(tx)}
               >
+
                 <Avatar.Root size="xs" mr={2}>
                   <Avatar.Fallback>
-                    <Icon as={serviceIcons[tx.type]} boxSize={3} />
+                    <Icon as={SERVICE_ICONS[tx.type]} boxSize={3} />
                   </Avatar.Fallback>
                 </Avatar.Root>
 
                 <Box flex="1" minW={0}>
                   <Flex justify="space-between">
                     <Text fontWeight="medium" isTruncated>{tx.type}</Text>
-                    <Text fontWeight="bold">₦ {tx.amount.toLocaleString()}</Text>
+                    <Text fontWeight="bold">₦{tx.amount?.toLocaleString() ?? '0'}</Text>
                   </Flex>
                   <Flex justify="space-between" color="gray.500">
-                    <Text fontSize="xs" isTruncated>{tx.recipient}</Text>
-                    <Text fontSize="xs">
-                      {new Date(tx.date).toLocaleDateString('en-US', {
-                        month: 'short',
-                        day: 'numeric',
-                        year: '2-digit',
-                      })}
-                    </Text>
+                    <Text fontSize="xs" isTruncated>{tx.recipient || 'N/A'}</Text>
+                    <Text fontSize="xs">{formatDate(tx.date)}</Text>
                   </Flex>
                 </Box>
 
-                <Box ml={2}>
+                <Box ml={3}>
                   <StatusBadge status={tx.status} />
                 </Box>
               </Flex>
             ))
           ) : (
-            <Box textAlign="center" py={4} color="gray.500">
-              No transactions found
+            <Box textAlign="center" py={8} color="gray.500">
+              {isLoading ? 'Loading transactions...' : 'No transactions found'}
             </Box>
           )}
         </Stack>
 
-        <VStack alignItems="start">
-          <Dialog.Root
-            colorPalette="gray"
-            placement="center"
-            size="full"
-            closeOnInteractOutside={false}
-            motionPreset="slide-in-bottom"
-            lazyMount
-            open={open}
-            onOpenChange={(e) => setOpen(e.open)}
-          >
-            <Portal>
-              <Dialog.Backdrop />
-              <Dialog.Positioner>
-                <Dialog.Content>
-                  <Dialog.Header>
-                    <Dialog.Title>Transaction Details</Dialog.Title>
-                  </Dialog.Header>
-                  <Dialog.Body pb="8">
-                    <DataList.Root orientation="horizontal">
-                      <DataList.Item>
-                        <DataList.ItemLabel>Status</DataList.ItemLabel>
-                        <DataList.ItemValue>
-                          <StatusBadge status={selectedTransaction?.status} />
-                        </DataList.ItemValue>
-                      </DataList.Item>
-                      <DataList.Item>
-                        <DataList.ItemLabel>Type</DataList.ItemLabel>
-                        <DataList.ItemValue>{selectedTransaction?.description}</DataList.ItemValue>
-                      </DataList.Item>
-                      <DataList.Item>
-                        <DataList.ItemLabel>Amount</DataList.ItemLabel>
-                        <DataList.ItemValue>₦{selectedTransaction?.amount?.toLocaleString()}</DataList.ItemValue>
-                      </DataList.Item>
-                      <DataList.Item>
-                        <DataList.ItemLabel>Description</DataList.ItemLabel>
-                        <DataList.ItemValue>{selectedTransaction?.comment}</DataList.ItemValue>
-                      </DataList.Item>
-                      <DataList.Item>
-                        <DataList.ItemLabel>Date</DataList.ItemLabel>
-                        <DataList.ItemValue>
-                          {selectedTransaction?.date && formatDateWithOrdinal(selectedTransaction.date)}
-                        </DataList.ItemValue>
-                      </DataList.Item>
-                    </DataList.Root>
-                  </Dialog.Body>
-                  <Dialog.CloseTrigger asChild>
-                    <CloseButton size="sm" />
-                  </Dialog.CloseTrigger>
-                </Dialog.Content>
-              </Dialog.Positioner>
-            </Portal>
-          </Dialog.Root>
-        </VStack>
+        {/* Transaction Details Dialog */}
+              <VStack alignItems="start">
+                  <Dialog.Root
+                    colorPalette="gray"
+                    placement="center"
+                    size="full"
+                    closeOnInteractOutside={false}
+                    motionPreset="slide-in-bottom"
+                    lazyMount
+                    open={open}
+                    onOpenChange={(e) => setOpen(e.open)}
+                  >
+                    <Portal>
+                      <Dialog.Backdrop />
+                      <Dialog.Positioner>
+                        <Dialog.Content>
+                          <Dialog.Header>
+                            <Dialog.Title>Transaction Details</Dialog.Title>
+                          </Dialog.Header>
+                          <Dialog.Body pb="8">
+                            <DataList.Root orientation="horizontal">
+                              <DataList.Item>
+                                <DataList.ItemLabel>Status</DataList.ItemLabel>
+                                <DataList.ItemValue>
+                                  <StatusBadge status={selectedTransaction?.status} />
+                                </DataList.ItemValue>
+                              </DataList.Item>
+                              <DataList.Item>
+                                <DataList.ItemLabel>Type</DataList.ItemLabel>
+                                <DataList.ItemValue>{selectedTransaction?.description}</DataList.ItemValue>
+                              </DataList.Item>
+                              <DataList.Item>
+                                <DataList.ItemLabel>Amount</DataList.ItemLabel>
+                                <DataList.ItemValue>₦{selectedTransaction?.amount?.toLocaleString()}</DataList.ItemValue>
+                              </DataList.Item>
+                              <DataList.Item>
+                                <DataList.ItemLabel>Description</DataList.ItemLabel>
+                                <DataList.ItemValue>{selectedTransaction?.comment}</DataList.ItemValue>
+                              </DataList.Item>
+                              <DataList.Item>
+                                <DataList.ItemLabel>Date</DataList.ItemLabel>
+                                <DataList.ItemValue>
+                                  {selectedTransaction?.date && formatDateWithOrdinal(selectedTransaction.date)}
+                                </DataList.ItemValue>
+                              </DataList.Item>
+                              <DataList.Item>
+                                <DataList.ItemLabel>Api</DataList.ItemLabel>
+                                <DataList.ItemValue>
+                                  {selectedTransaction?.api_type && formatDateWithOrdinal(selectedTransaction.api_type)}
+                                </DataList.ItemValue>
+                              </DataList.Item>
+                            </DataList.Root>
+                          </Dialog.Body>
+                          <Dialog.CloseTrigger asChild>
+                            <CloseButton size="sm" />
+                          </Dialog.CloseTrigger>
+                        </Dialog.Content>
+                      </Dialog.Positioner>
+                    </Portal>
+                  </Dialog.Root>
+                </VStack>
 
         {/* Pagination */}
-          <Flex align="center" mt={8}>
-            <Text fontSize="sm" color="gray.500">
-              Showing {(currentPage - 1) * transactionsPerPage + 1}–
-              {Math.min(currentPage * transactionsPerPage, totalTransactions)} of {totalTransactions} transactions
+        {totalTransactions > 0 && (
+          <Flex direction="column" mt={8}>
+            <Text fontSize="sm" color="gray.500" mb={2}>
+              Showing {(currentPage - 1) * TRANSACTIONS_PER_PAGE + 1} -{' '}
+              {Math.min(currentPage * TRANSACTIONS_PER_PAGE, totalTransactions)} of{' '}
+              {totalTransactions} transactions
             </Text>
-          </Flex>
-          <Flex align="center" mt={3}>
-            <ButtonGroup size="xs" isAttached variant="subtle">
+            
+            <ButtonGroup size="sm" isAttached variant="outline">
               <Button
                 onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                 isDisabled={currentPage === 1}
+                 variant='solid'
               >
-                <FiChevronLeft /> Previous
+                <FiChevronLeft /> Prev
               </Button>
-  
-              {Array.from({ length: Math.min(3, totalPages) }).map((_, idx) => {
-                let pageNum
-                if (totalPages <= 5) pageNum = idx + 1
-                else if (currentPage <= 3) pageNum = idx + 1
-                else if (currentPage >= totalPages - 2) pageNum = totalPages - 4 + idx
-                else pageNum = currentPage - 2 + idx
-  
-                return (
-                  <Button
-                    key={pageNum}
-                    onClick={() => setCurrentPage(pageNum)}
-                    variant={currentPage === pageNum ? 'solid' : 'subtle'}
-                    colorPalette={currentPage === pageNum ? 'blue' : 'gray'}
-                  >
-                    {pageNum}
-                  </Button>
-                )
-              })}
-  
+              
+              {paginationRange.map(page => (
+                <Button
+                  key={page}
+                  onClick={() => setCurrentPage(page)}
+                  variant={currentPage === page ? 'solid' : 'subtle'}
+                  colorScheme={currentPage === page ? 'blue' : 'gray'}
+                >
+                  {page}
+                </Button>
+              ))}
+              
               <Button
                 onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                 isDisabled={currentPage === totalPages}
+                variant='solid'
               >
                 Next <FiChevronRight />
               </Button>
             </ButtonGroup>
           </Flex>
+        )}
       </Box>
     </Box>
   )

@@ -16,7 +16,7 @@ export function useColorMode() {
   const { resolvedTheme, setTheme, forcedTheme } = useTheme()
   const colorMode = forcedTheme || resolvedTheme
   const toggleColorMode = () => {
-    setTheme(resolvedTheme === 'light' ? 'dark' : 'light')
+    setTheme(resolvedTheme === 'light' ? 'light' : 'dark')
   }
   return {
     colorMode: colorMode,
@@ -27,7 +27,7 @@ export function useColorMode() {
 
 export function useColorModeValue(light, dark) {
   const { colorMode } = useColorMode()
-  return colorMode === 'dark' ? dark : light
+  return colorMode === 'light' ? light : dark
 }
 
 export function ColorModeIcon() {

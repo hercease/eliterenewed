@@ -164,7 +164,13 @@ useEffect(() => {
 
   return (
 
-    <Box minH="100vh" bg="gray.50">
+    <Box 
+      minH="100vh" 
+      bg="gray.50" 
+      bgImage="url('https://www.transparenttextures.com/patterns/exclusive-paper.png')"
+      bgRepeat="repeat"
+      bgSize="auto"
+    >
 
       <NavBar isAdmin={userdetails?.data.isAdmin} name={userdetails?.data.username} />
 
@@ -177,11 +183,11 @@ useEffect(() => {
             {stats.map((stat, idx) => (
             <GridItem key={idx}>
                 <StatCard
-                label={stat.label}
-                value={stat.value}
-                bg={stat.bg}
-                color={stat.color}
-                shadow={stat.shadow}
+                  label={stat.label}
+                  value={stat?.value}
+                  bg={stat.bg}
+                  color={stat.color}
+                  shadow={stat.shadow}
                 />
             </GridItem>
             ))}
@@ -278,7 +284,7 @@ function StatCard({ label, value, bg, color, shadow = false }) {
         <Flex align="center">
           <Box>
             <Text fontSize="xs" mb="1">{label}</Text>
-            <Text fontWeight="bold">₦{value}</Text>
+            <Text fontWeight="bold">₦{value?.toLocaleString()}</Text>
           </Box>
         </Flex>
       </Card.Body>
@@ -343,7 +349,7 @@ function TransactionItem({ transaction }) {
                     {new Date(transaction.date).toLocaleDateString('en-US', { 
                       month: 'short', 
                       day: 'numeric',
-                      year: '2-digit' 
+                      year: 'numeric' 
                     })}
                   </Text>
                 </Flex>

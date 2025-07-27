@@ -3,59 +3,54 @@ import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 
 export const metadata = {
-  title: "Elite | Transaction History",
-  description: "Get yourself registered today",
-  metadataBase: new URL('https://eliteglobalnetwork.com.ng'), // Required for absolute URLs
+  title: "My Profile | Account Settings & Security - Elite Global Network",
+  description: "Manage your personal information, security settings, and preferences. Update your contact details and password securely.",
+  metadataBase: new URL('https://eliteglobalnetwork.com.ng'),
   alternates: {
-    canonical: '/transactionhistory' // Canonical URL
+    canonical: 'https://eliteglobalnetwork.com.ng/profile',
   },
   icons: {
     icon: [
-      { url: '/favicon/favicon.ico' },
       { url: '/favicon/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
       { url: '/favicon/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
     ],
     apple: [
-      { url: '/favicon/apple-touch-icon.png' },
-      { url: '/favicon/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+      { url: '/favicon/apple-touch-icon.png', sizes: '180x180' },
     ],
   },
   openGraph: {
-    title: "Elite | Transaction History",
-    description: "Get yourself registered today",
-    url: "https://eliteglobalnetwork.com.ng/transactionhistory",
-    siteName: "Elite Global Network",
-    images: [
-      {
-        url: "https://eliteglobalnetwork.com.ng/elite_png.png", // Absolute URL
-        width: 1200,
-        height: 630,
-        alt: "Elite Global Network User Transaction History",
-      },
-    ],
-    locale: "en_US",
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Elite | Transaction History",
-    description: "",
-    images: {
-      url: "https://eliteglobalnetwork.com.ng/elite_png.png", // Absolute URL
-      alt: "Elite Global Network User Transaction History Page",
-    },
-    creator: "@EliteGlobalNet", // Optional Twitter handle
+    title: "My Profile | Elite Global Network",
+    description: "Secure profile management dashboard",
+    url: "https://eliteglobalnetwork.com.ng/profile",
+    images: [{
+      url: "https://eliteglobalnetwork.com.ng/elite_png.png",
+      width: 1200,
+      height: 630,
+      alt: "Profile management dashboard",
+    }],
   },
   robots: {
-    index: true,
+    index: false, // Critical for privacy
     follow: true,
-    nocache: false,
+    nocache: true,
     googleBot: {
-      index: true,
+      index: false,
       follow: true,
-      noimageindex: false,
+      noimageindex: true,
     },
   },
+};
+
+// Minimal schema for account pages
+export const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "Profile Management",
+  "url": "https://eliteglobalnetwork.com.ng/profile",
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "Elite Global Network"
+  }
 };
 
 export default async function Profile() {
@@ -68,6 +63,13 @@ export default async function Profile() {
   }
 
     return (
-        <ProfilePageComponent user={token} />
+      <>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      <ProfilePageComponent user={token} />
+    </>
+   
     )
 }

@@ -106,6 +106,18 @@ const baseNetworks = useMemo(() => createListCollection({ items: baseNetworksDat
         body: formData.toString(),
       })
 
+      if (!response.ok) {
+          const text =  response.text();
+            toaster.create({
+                title: 'Error',
+                description: `Server error ${response.status}: ${text}`,
+                status: 'error',
+                duration: 5000,
+                type: "error"
+            })
+            return;
+        }
+
       const data = await response.json()
       setFetchedNetworks(data)
     } catch (error) {
@@ -157,61 +169,98 @@ const baseNetworks = useMemo(() => createListCollection({ items: baseNetworksDat
     setOpen(true);
   }
 
-  const handleConfirmedSubmit = (data) => { 
-      //setOpen(false);
-      //setLoading(true);
-      const formData = new URLSearchParams()
-      formData.append('network_name', data.network)
-      formData.append('plan_name', selectedPlan?.name)
-      formData.append('network_code', data.plan)
-      formData.append('api', selectedPlan?.api)
-      formData.append('amount', selectedPlan?.price)
-      formData.append('com', selectedPlan?.com)
-      formData.append('phone', data.phone)
+  const handleConfirmedSubmit = async (data) => {
+    try {
+      // Optional UI updates (e.g. modal close, loading spinner)
+      // setOpen(false);
+      // setLoading(true);
 
-      const response = fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/datapay`, {
+      if (!data.network || !data.plan || !data.phone || !selectedPlan?.price || !user) {
+        toaster.create({
+          title: 'Error',
+          description: 'Missing required input fields.',
+          type: 'error',
+          duration: 5000,
+          isClosable: true,
+        });
+        return;
+      }
+
+      const payload = {
+        network_name: data.network,
+        plan_name: selectedPlan?.name,
+        network_code: data.plan,
+        api: selectedPlan?.api,
+        amount: selectedPlan?.price,
+        com: selectedPlan?.com,
+        phone: data.phone,
+        profit: selectedPlan?.profit,
+        username: user,
+      };
+
+      const formData = new URLSearchParams(payload);
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/datapay`, {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
+          'Content-Type': 'application/x-www-form-urlencoded',
         },
-            body: formData.toString(),
-        })
+        body: formData.toString(),
+      });
 
-        const resp = response.json();
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`Server error ${response.status}: ${text}`);
+      }
 
-        if(resp.status){
+      const resp = await response.json();
 
-          toaster.create({
-              title: 'Success',
-              description: resp.message,
-              duration: 10000,
-              isClosable: true,
-              type: "success"
-          })
+      if (resp.status) {
+        toaster.create({
+          title: 'Success',
+          description: resp.message || 'Data purchase successful!',
+          duration: 10000,
+          isClosable: true,
+          type: 'success',
+        });
+      } else {
+        toaster.create({
+          title: 'Error',
+          description: resp.message || 'Something went wrong',
+          duration: 5000,
+          isClosable: true,
+          type: 'error',
+        });
+      }
 
-        } else {
+    } catch (error) {
+      console.error("Data Purchase Error:", error);
+      toaster.create({
+        title: 'Error',
+        description: error.message || 'An unexpected error occurred',
+        duration: 5000,
+        isClosable: true,
+        type: 'error',
+      });
+    } finally {
+      // Optional loading reset
+      // setLoading(false);
+    }
+  };
 
-            toaster.create({
-              title: 'Error',
-              description: data.message,
-              status: 'error',
-              duration: 5000,
-              type: "error"
-            })
-
-        }
-      
-
-  }
 
   return (
-    <Box minH="100vh" bg="gray.50">
+    <Box minH="100vh"
+      bg="gray.50"
+      bgImage="url('https://www.transparenttextures.com/patterns/exclusive-paper.png')"
+      bgRepeat="repeat"
+      bgSize="auto">
       <NavBar isAdmin={userdetails?.data.isAdmin} name={userdetails?.data.username} />
       <Box p={6} color="black">
         <Flex justify="space-between" align="center" mb={8}>
           <Heading size="lg">Data Recharge</Heading>
         </Flex>
-
+      <Box maxW="lg" placeSelf="center">
               <Dialog.Root
                   key="center"
                   placement="center"
@@ -386,6 +435,7 @@ const baseNetworks = useMemo(() => createListCollection({ items: baseNetworksDat
             Continue
           </Button>
         </form>
+      </Box>
       </Box>
     </Box>
   )

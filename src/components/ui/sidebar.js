@@ -20,31 +20,28 @@ import { FiMenu,
   FiWifi,
   FiBook,
   FiZap,
-  FiChevronRight,
-  FiCheckCircle,
+  FiUsers,
   FiClock,
-  FiAlertCircle,
   FiSmartphone,
   FiTv,
-  FiKey,
-  FiSettings, FiCreditCard } from "react-icons/fi"
+  FiKey, FiCreditCard } from "react-icons/fi"
 import { FaSignOutAlt, FaUserAlt } from 'react-icons/fa';
 import { useState } from 'react'
-import { useRouter } from 'next/navigation' // For App Router
+import { useRouter, usePathname } from 'next/navigation' // For App Router
 import { parseCookies, setCookie, destroyCookie } from 'nookies';
-//import { Link }  from 'next/link'
+
 
 export default function Sidebar({ isAdmin, name }) {
 
  const [isDrawerOpen, setDrawerOpen] = useState(false)
  const [activeNavItem, setActiveNavItem] = useState('dashboard')
  const router = useRouter();
+ const pathname = usePathname();
+const currentPage = pathname.split('/')[1]; // removes leading slash
   function Logout(){
 		destroyCookie(null, 'elitetoken'); router.push('/login')
 	}
 
-
- //console.log(activeNavItem);
 
   return (
         <Flex
@@ -80,17 +77,17 @@ export default function Sidebar({ isAdmin, name }) {
     
                       <Box px={4} py={2}>
                         <Text fontSize="xs" fontWeight="bold" color="gray.500" textTransform="uppercase" mb={1}>Main</Text>
-                        <NavItem icon={<FiHome />} active={activeNavItem === 'dashboard'} onClick={() => handleClick('dashboard')}>
+                        <NavItem icon={<FiHome />} active={currentPage === 'dashboard'} onClick={() => handleClick('dashboard')}>
                           Dashboard
                         </NavItem>
                       </Box>
                       {isAdmin && (
                         <Box px={4} py={2}>
                           <Text fontSize="xs" fontWeight="bold" color="gray.500" textTransform="uppercase" mb={1}>Admin</Text>
-                          <NavItem icon={<FiUser />} active={activeNavItem === 'allusers'} onClick={() => handleClick('allusers')}>
+                          <NavItem icon={<FiUser />} active={currentPage === 'allusers'} onClick={() => handleClick('allusers')}>
                             All Users
                           </NavItem>
-                          <NavItem icon={<FiClock />} active={activeNavItem === 'alltransactions'} onClick={() => handleClick('alltransactions')}>
+                          <NavItem icon={<FiClock />} active={currentPage === 'alltransactions'} onClick={() => handleClick('alltransactions')}>
                             All Transactions
                           </NavItem>
                         </Box>
@@ -102,14 +99,13 @@ export default function Sidebar({ isAdmin, name }) {
                         {[
                           { label: 'Airtime', key: 'airtimerecharge',  icon: <FiSmartphone /> },
                           { label: 'Data', key: 'datarecharge',  icon: <FiWifi /> },
-                          { label: 'Education', key: 'education', icon: <FiBook /> },
                           { label: 'Electricity', key: 'electricity', icon: <FiZap /> },
                           { label: 'Cable', key: 'cabletv', icon: <FiTv /> },
                         ].map((item) => (
                           <NavItem
                             key={item.key}
                             icon={item.icon}
-                            active={activeNavItem === item.key}
+                            active={currentPage === item.key}
                             onClick={() => handleClick(item.key)}
                           >
                             {item.label}
@@ -119,23 +115,26 @@ export default function Sidebar({ isAdmin, name }) {
     
                       <Box px={4} py={2}>
                         <Text fontSize="xs" fontWeight="bold" color="gray.500" textTransform="uppercase" mb={1}>Activities</Text>
-                        <NavItem icon={<FiClock />} active={activeNavItem === 'transactionhistory'} onClick={() => handleClick('transactionhistory')}>
+                        <NavItem icon={<FiClock />} active={currentPage === 'transactionhistory'} onClick={() => handleClick('transactionhistory')}>
                           Transaction History
                         </NavItem>
-                        <NavItem icon={<FiDollarSign />} active={activeNavItem === 'fundwallet'} onClick={() => handleClick('fundwallet')}>
+                        <NavItem icon="₦" active={currentPage === 'fundwallet'} onClick={() => handleClick('fundwallet')}>
                           Fund wallet
                         </NavItem>
-                        <NavItem icon={<FiCreditCard />} active={activeNavItem === 'fundtransfer'} onClick={() => handleClick('fundtransfer')}>
+                        <NavItem icon={<FiCreditCard />} active={currentPage === 'fundtransfer'} onClick={() => handleClick('fundtransfer')}>
                           Fund Transfer
                         </NavItem>
                       </Box>
     
                       <Box px={4} py={2}>
                         <Text fontSize="xs" fontWeight="bold" color="gray.500" textTransform="uppercase" mb={1}>Account</Text>
-                        <NavItem icon={<FiUser />} active={activeNavItem === 'profile'} onClick={() => handleClick('profile')}>
+                        <NavItem icon={<FiUser />} active={currentPage === 'profile'} onClick={() => handleClick('profile')}>
                           Profile
                         </NavItem>
-                        <NavItem icon={<FiKey />} active={activeNavItem === 'changepassword'} onClick={() => handleClick('changepassword')}>
+                        <NavItem icon={<FiUsers />} active={currentPage === 'referrals'} onClick={() => handleClick('referrals')}>
+                          Your Elite Recruits
+                        </NavItem>
+                        <NavItem icon={<FiKey />} active={currentPage === 'changepassword'} onClick={() => handleClick('changepassword')}>
                           Change password
                         </NavItem>
                       </Box>

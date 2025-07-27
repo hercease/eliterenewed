@@ -4,11 +4,11 @@ import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 
 export const metadata = {
-  title: "Elite | Dashboard",
-  description: "Recharge all you want",
-  metadataBase: new URL('https://eliteglobalnetwork.com.ng'), // Required for absolute URLs
+  title: "Buy Data | Affordable Data Plans | Elite Global Network",
+  description: "Recharge data instantly on all networks at the lowest prices. Enjoy fast and reliable data top-up with Elite Global Network.",
+  metadataBase: new URL('https://eliteglobalnetwork.com.ng'),
   alternates: {
-    canonical: '/allusers' // Canonical URL
+    canonical: 'https://eliteglobalnetwork.com.ng/datarecharge', // Updated canonical URL
   },
   icons: {
     icon: [
@@ -22,16 +22,16 @@ export const metadata = {
     ],
   },
   openGraph: {
-    title: "Elite | Dashboard",
-    description: "Recharge all you want",
-    url: "https://eliteglobalnetwork.com.ng/allusers",
+    title: "Buy Data Online | Instant Data Recharge | Elite Global Network",
+    description: "Top-up your mobile data on MTN, Glo, Airtel, or 9mobile with instant delivery and cheap rates. Powered by Elite Global Network.",
+    url: "https://eliteglobalnetwork.com.ng/datarecharge",
     siteName: "Elite Global Network",
     images: [
       {
-        url: "https://eliteglobalnetwork.com.ng/elite_png.png", // Absolute URL
+        url: "https://eliteglobalnetwork.com.ng/elite_png.png",
         width: 1200,
         height: 630,
-        alt: "Elite Global Network User Dashboard",
+        alt: "Buy Data Online - Elite Global Network",
       },
     ],
     locale: "en_US",
@@ -39,13 +39,13 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Elite | Dashboard",
-    description: "Recharge all you want",
+    title: "Recharge Data at the Best Rates | Elite Global Network",
+    description: "Instant data recharge for MTN, Airtel, Glo & 9mobile. Get affordable internet bundles in seconds.",
     images: {
-      url: "https://eliteglobalnetwork.com.ng/elite_png.png", // Absolute URL
-      alt: "Elite Global Network User Dashboard",
+      url: "https://eliteglobalnetwork.com.ng/elite_png.png",
+      alt: "Elite Global Network Data Recharge Page",
     },
-    creator: "@EliteGlobalNet", // Optional Twitter handle
+    creator: "@EliteGlobalNet",
   },
   robots: {
     index: true,
@@ -58,6 +58,7 @@ export const metadata = {
     },
   },
 };
+
 
 
 

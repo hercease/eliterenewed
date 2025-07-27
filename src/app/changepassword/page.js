@@ -3,11 +3,11 @@ import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 
 export const metadata = {
-  title: "Elite | Change Password",
-  description: "Change Password Page",
-  metadataBase: new URL('https://eliteglobalnetwork.com.ng'), // Required for absolute URLs
+  title: "Change Password | Elite Global Network",
+  description: "Securely change your Elite Global Network account password. Keep your account safe by updating your credentials.",
+  metadataBase: new URL('https://eliteglobalnetwork.com.ng'),
   alternates: {
-    canonical: '/changepassword' // Canonical URL
+    canonical: '/changepassword',
   },
   icons: {
     icon: [
@@ -21,16 +21,16 @@ export const metadata = {
     ],
   },
   openGraph: {
-    title: "Elite | Change Password",
-    description: "Change Password Page",
+    title: "Change Password | Elite Global Network",
+    description: "Update your Elite Global Network login credentials to maintain account security.",
     url: "https://eliteglobalnetwork.com.ng/changepassword",
     siteName: "Elite Global Network",
     images: [
       {
-        url: "https://eliteglobalnetwork.com.ng/elite_png.png", // Absolute URL
+        url: "https://eliteglobalnetwork.com.ng/elite_png.png",
         width: 1200,
         height: 630,
-        alt: "Elite Global Network Change Password Page",
+        alt: "Elite Global Network Password Update Page",
       },
     ],
     locale: "en_US",
@@ -38,13 +38,13 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Elite | Change Password",
-    description: "Change Password Page",
+    title: "Change Password | Elite Global Network",
+    description: "Secure your Elite Global Network account by updating your password.",
     images: {
-      url: "https://eliteglobalnetwork.com.ng/elite_png.png", // Absolute URL
-      alt: "Elite Global Network Change Password Page",
+      url: "https://eliteglobalnetwork.com.ng/elite_png.png",
+      alt: "Elite Global Network Change Password",
     },
-    creator: "@EliteGlobalNet", // Optional Twitter handle
+    creator: "@EliteGlobalNet",
   },
   robots: {
     index: true,
@@ -57,6 +57,7 @@ export const metadata = {
     },
   },
 };
+
 
 export default async function ChangePassword() {
   const cookieStore = await cookies();

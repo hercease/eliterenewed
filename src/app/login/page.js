@@ -1,34 +1,39 @@
- import LoginComponent from './logincomponent';
+import LoginComponent from './logincomponent';
 
 export const metadata = {
-  title: "Elite | Login",
-  description: "Recharge all you want",
-  metadataBase: new URL('https://eliteglobalnetwork.com.ng'), // Required for absolute URLs
+  title: "Login to Your Account | Elite Global Network",
+  description: "Securely access your Elite account to recharge airtime, buy data, pay bills, and manage transactions. Two-factor authentication supported.",
+  metadataBase: new URL('https://eliteglobalnetwork.com.ng'),
   alternates: {
-    canonical: '/login' // Canonical URL
+    canonical: 'https://eliteglobalnetwork.com.ng/login',
+    languages: {
+      'en-US': '/login',
+      // 'fr-FR': '/fr/login', // Uncomment if multilingual
+    },
   },
   icons: {
     icon: [
       { url: '/favicon/favicon.ico' },
       { url: '/favicon/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
       { url: '/favicon/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/favicon/favicon-192x192.png', sizes: '192x192', type: 'image/png' },
     ],
     apple: [
-      { url: '/favicon/apple-touch-icon.png' },
-      { url: '/favicon/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+      { url: '/favicon/apple-touch-icon.png', sizes: '180x180' },
+      { url: '/favicon/apple-touch-icon-152x152.png', sizes: '152x152' },
     ],
   },
   openGraph: {
-    title: "Elite | Login",
-    description: "Welcome back",
+    title: "Secure Login | Elite Global Network",
+    description: "Access your account with bank-level security to manage all your transactions in one place.",
     url: "https://eliteglobalnetwork.com.ng/login",
     siteName: "Elite Global Network",
     images: [
       {
-        url: "https://eliteglobalnetwork.com.ng/elite_png.png", // Absolute URL
+        url: "https://eliteglobalnetwork.com.ng/elite_png.png",
         width: 1200,
         height: 630,
-        alt: "Elite Global Network User Login Page",
+        alt: "Secure login portal for Elite Global Network",
       },
     ],
     locale: "en_US",
@@ -36,26 +41,53 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Elite | Login",
-    description: "Welcome back",
+    site: "@EliteGlobalNet",
+    creator: "@EliteGlobalNet",
+    title: "Secure Account Login | Elite Global Network",
+    description: "Sign in to manage your airtime, data, and bill payments with end-to-end encryption.",
     images: {
-      url: "https://eliteglobalnetwork.com.ng/elite_png.png", // Absolute URL
-      alt: "Elite Global Network User Login Page",
+      url: "https://eliteglobalnetwork.com.ng/elite_png.png",
+      alt: "Elite Global Network Login Portal",
     },
-    creator: "@EliteGlobalNet", // Optional Twitter handle
   },
   robots: {
-    index: true,
+    index: false, // Login pages typically shouldn't be indexed
     follow: true,
-    nocache: false,
+    nocache: true, // Prevent caching of login pages
     googleBot: {
-      index: true,
+      index: false,
       follow: true,
-      noimageindex: false,
+      noimageindex: true,
+      'max-image-preview': 'none',
     },
   },
+  other: {
+    'security-txt': '/.well-known/security.txt' // Recommended for compliance
+  }
 };
 
-export default function LoginPage(){
-    return <LoginComponent  />;
+// Security-focused schema markup
+export const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "Login Portal",
+  "description": "Secure authentication gateway",
+  "url": "https://eliteglobalnetwork.com.ng/login",
+  "significantLink": [
+    "https://eliteglobalnetwork.com.ng/password-reset",
+    "https://eliteglobalnetwork.com.ng/2fa-setup"
+  ],
+  "securityPolicy": "https://eliteglobalnetwork.com.ng/security"
+};
+
+export default function LoginPage() {
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <LoginComponent />
+    </>
+  );
 }

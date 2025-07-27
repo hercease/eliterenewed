@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { Button, Card, Field, Input, Stack, Flex, Box, Heading, Text, Checkbox } from "@chakra-ui/react"
+import { Button, Card, Field, Input, Stack, Flex, Box, Text, InputGroup } from "@chakra-ui/react"
 import { PasswordInput } from "@/components/ui/password-input"
 import { toaster } from "@/components/ui/toaster"
 import Image from 'next/image';
@@ -9,6 +9,7 @@ import Link from 'next/link'
 import { useEffect, useMemo, useState } from 'react'
 import { useForm  } from 'react-hook-form'
 import { parseCookies, setCookie, destroyCookie } from 'nookies';
+import { FiUser, FiUnlock } from "react-icons/fi";
 
 export default function LoginComponent() {
 
@@ -95,46 +96,52 @@ export default function LoginComponent() {
 
   return (
     <Flex
+      direction="column"
       minH="100vh"
-      align="center"
-      justify="center"
       bg="gray.50"
-      p={{ base: 4, md: 0 }}
+      bgImage="url('https://www.transparenttextures.com/patterns/exclusive-paper.png')"
+      bgRepeat="repeat"
+      bgSize="auto"
+      px={4}
     >
-       <Card.Root background="white" borderWidth="1px" borderColor="gray.400" shadow="sm" color="black" w={{ base: 'full', md: 'md' }}>
-            <Card.Header>
-                <Image src="/elite_png.png" alt="elite Image" width={145} height={55}  />
-                <Card.Title>Welcome back</Card.Title>
-                    <Card.Description>
-                        Sign in to your account
-                    </Card.Description>
-                </Card.Header>
-            <Card.Body>
+       
+           <Flex flex="1" justify="center" align="center">
+            <Box w={{ base: '100%', sm: '400px' }} p={8} >
+                <Flex justify="flex-start" mb={4}>
+                    <Box textAlign="right">
+                    <Image src="/elite_png.png" alt="elite" width={140} height={50} />
+                    <Text fontSize="sm" color="gray.600">Welcome back, Sign in to your account</Text>
+                    </Box>
+                </Flex>
             <Stack spacing={6}>
             
             <form onSubmit={handleSubmit(handleFormSubmit)}>
                 <Stack mb="2" spacing={4}>
-                <Field.Root id="email">
+                <Field.Root id="username">
                     <Field.Label color="black">Username</Field.Label>
-                    <Input {...register('username',{ required: "Enter username"  })} placeholder='Enter username' variant="outline" borderColor="#9ca3af" />
+                    <InputGroup startElement={<FiUser />}>
+                        <Input {...register('username',{ required: "Enter username"  })} size="lg" placeholder='Enter username' color="black" borderColor="#9ca3af" />
+                    </InputGroup>
                     <Field.HelperText color="red">{errors.username?.message}</Field.HelperText>
                 </Field.Root>
                 
                 <Field.Root id="password">
                     <Field.Label color="black">Password</Field.Label>
-                    <PasswordInput {...register('password',{ required: "Enter password"  })} placeholder='Enter Password' color="black" borderColor="#9ca3af" />
+                    <InputGroup startElement={<FiUnlock />}>
+                        <PasswordInput {...register('password',{ required: "Enter password"  })} size="lg" placeholder='Enter Password' color="black" borderColor="#9ca3af" />
+                    </InputGroup>
                     <Field.HelperText color="red">{errors.password?.message}</Field.HelperText>
                 </Field.Root>
                 </Stack>
 
-                <Stack direction="row" justify="space-between" align="center" mb="5" >
+                <Stack direction="row" justify="space-between" align="center" color="black" mb="5" >
                     <Link href="/forgot-password" color="blue.500">
                         Forgot password?
                     </Link>
                 </Stack>
 
                 <Button
-                    background="#0060d1"
+                    background="#7d7f81ff"
                     color="white"
                     type="submit"
                     loading={isLoading}
@@ -147,15 +154,17 @@ export default function LoginComponent() {
             </form>
             
             
-            <Text align="center" fontSize="sm" color="gray.600">
+
+            <Text mt={4} fontSize="sm" textAlign="center" color="gray.600">
                 Don{`'`}t have an account?{' '}
-                <Link href="/register" color="brand.500" fontWeight="medium">
-                Sign up
+                <Link href="/register" passHref>
+                    <Text as="span" color="blue.500" fontWeight="medium">Sign up</Text>
                 </Link>
             </Text>
+
             </Stack>
-      </Card.Body>
-      </Card.Root>
+            </Box>
+    </Flex>
     </Flex>
   );
 }

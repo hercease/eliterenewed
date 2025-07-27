@@ -11,6 +11,7 @@ import { useForm  } from 'react-hook-form'
 import dynamic from 'next/dynamic'
 import NavBar from '@/components/ui/sidebar'
 import { toaster } from "@/components/ui/toaster"
+import { FiTv } from "react-icons/fi"
 
 // Dynamic Icon import
 const FaIdCard = dynamic(() =>
@@ -242,6 +243,22 @@ export default function CableTvComponent({user}) {
             body: formData.toString(),
         })
 
+        setLoading(false);
+
+        if (!response.ok) {
+
+          const text =  response.text();
+
+            toaster.create({
+                title: 'Error',
+                description: `Server error ${response.status}: ${text}`,
+                status: 'error',
+                duration: 5000,
+                type: "error"
+            })
+            return;
+        }
+
         const resp = response.json();
 
         if(resp.status){
@@ -309,20 +326,31 @@ export default function CableTvComponent({user}) {
         )
     }
 
-
-
-    const dialog = useDialog();
+console.log(selectedNetwork);
 
   return (
 
 
-    <Box minH="100vh" bg="gray.50">
+    <Box 
+      minH="100vh" 
+      bg="gray.50"
+      bgImage="url('https://www.transparenttextures.com/patterns/exclusive-paper.png')"
+      bgRepeat="repeat"
+      bgSize="auto"
+    >
       <NavBar isAdmin={userdetails?.data.isAdmin} name={userdetails?.data.username} />
       <Box p={6} color="black">
+
         <Flex justify="space-between" align="center" mb={3}>
-          <Heading color="black" size="lg">Cable Tv Subscription</Heading>
+          <Heading color="black" size="lg">
+            <HStack spacing={2}>
+              <FiTv />
+              Cable TV Subscription
+            </HStack>
+          </Heading>
         </Flex>
 
+        <Box W={500} placeSelf="center">
          <Dialog.Root
             key="center"
             placement="center"
@@ -438,6 +466,7 @@ export default function CableTvComponent({user}) {
                 setValidationSuccess(false)
                 setcustomerName('')
                 setPeriodValue(1);
+
 
               }}
             >
@@ -627,6 +656,7 @@ export default function CableTvComponent({user}) {
             )
         }
         </form>
+        </Box>
       </Box>
     </Box>
   )

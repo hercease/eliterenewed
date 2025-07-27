@@ -7,18 +7,13 @@ import {
   Input,
   InputGroup,
   Badge,
-  Select,
   HStack,
   Button,
   Icon,
   Text,
-  useDisclosure,
   Dialog,
-  Table,
   Portal,
   createListCollection,
-  GridItem,
-  Grid,
   Avatar,
   Stack,
   CloseButton,
@@ -28,7 +23,7 @@ import {
   Spinner
 } from '@chakra-ui/react'
 import {
-  FiSearch,
+  FiClock,
   FiChevronLeft,
   FiWifi,
   FiChevronRight,
@@ -42,116 +37,109 @@ import { useState, useMemo, useEffect, useCallback } from 'react'
 import NavBar from '@/components/ui/sidebar'
 import { toaster } from '@/components/ui/toaster'
 
-export default function MyTransactionComponent({user}) {
+// Constants
+const TRANSACTIONS_PER_PAGE = 8
+const SERVICE_ICONS = {
+  Airtime: FiSmartphone,
+  Data: FiWifi,
+  Electricity: FiZap,
+  Education: FiBook,
+  Cable: FiTv,
+  Fund: FiDollarSign,
+}
 
+export default function MyTransactionComponent({ user }) {
+  // State management
   const [searchTerm, setSearchTerm] = useState('')
-  const [open, setOpen] = useState(false)
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [transactions, setTransactions] = useState([])
   const [isLoading, setIsLoading] = useState(false)
-  const [currentPage, setCurrentPage] = useState(transactions.length > 0 ? 1 : 0)
-  const [transactionsPerPage, setTransactionsPerPage] = useState(8)
+  const [currentPage, setCurrentPage] = useState(1)
   const [totalTransactions, setTotalTransactions] = useState(0)
-  const [loading, setLoading] = useState(false)
-  const [selectedTransaction, setSelectedTransaction] = useState([])
-  const username = user; // Replace with actual username or user ID if needed
+  const [selectedTransaction, setSelectedTransaction] = useState(null)
   const [userdetails, setUserDetails] = useState(null)
- 
+  const cardBg = 'gray.100'
+
+  // Fetch user profile
   useEffect(() => {
+    if (!user) return
 
-    if (!user) return;
+    const fetchProfileInfo = async () => {
+      const formData = new URLSearchParams()
+      formData.append('username', user)
 
-      const fetchProfileInfo = async () => {
-          
-          const formData = new URLSearchParams()
-          formData.append('username', user)
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/fetchprofileinfo`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: formData.toString(),
+        })
+        const resp = await res.json()
+        setUserDetails(resp)
+      } catch (error) {
+        console.error('Failed to fetch profile:', error)
+      }
+    }
 
-          const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/fetchprofileinfo`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: formData.toString(),
-          });
+    fetchProfileInfo()
+  }, [user])
 
-          const resp = await res.json();
-          setUserDetails(resp);
+  // Memoized query parameters
+  const queryParams = useMemo(() => ({
+    page: currentPage,
+    limit: TRANSACTIONS_PER_PAGE,
+    search: searchTerm,
+    username: user
+  }), [currentPage, searchTerm, user])
 
-          console.log(resp);
+  // Fetch transactions
+  const fetchTransactions = useCallback(async (params) => {
+    setIsLoading(true)
+    try {
+      const formData = new URLSearchParams()
+      formData.append('page', params.page)
+      formData.append('limit', params.limit)
+      formData.append('search', params.search)
+      formData.append('username', params.username)
 
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/fetchusertransactions`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: formData.toString(),
+      })
+
+      if (!res.ok) {
+        throw new Error(`API error: ${res.status}`)
       }
 
-    fetchProfileInfo();
-  }, [user]);
-
-  const handleCardClick = (transaction) => {
-    setSelectedTransaction(transaction)
-    setOpen(true)
-  }
-
-  //console.log(transactions.length);
-
-  const frameworks = createListCollection({
-    items: [
-      { label: 'All Types', value: 'all' },
-      { label: 'Airtime', value: 'Airtime' },
-      { label: 'Data', value: 'Data' },
-      { label: 'Electricity', value: 'Electricity' },
-      { label: 'Cable', value: 'Cable' },
-    ],
-  })
-
-  const queryParams = useMemo(() => {
-    return {
-      page: currentPage,
-      limit: transactionsPerPage,
-      search: searchTerm,
-    };
-  }, [currentPage, transactionsPerPage, searchTerm]);
-
-  const fetchUsers = useCallback(async (params) => {
-  setIsLoading(true);
-
-  try {
-    const formData = new URLSearchParams();
-    formData.append('page', params.page);
-    formData.append('limit', params.limit);
-    formData.append('search', params.search);
-    formData.append('username', username);
-
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/fetchusertransactions`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: formData.toString(),
-    });
-
-    const data = await res.json();
-    //console.log(data);
-
-    if (data.status) {
-      setTransactions(data.data);
-      setTotalTransactions(data.total);
-    } else {
-      //toaster.create({ title: 'Error', description: 'No transaction found', type: 'error' });
+      const data = await res.json()
+      if (data.status) {
+        setTransactions(data.data)
+        setTotalTransactions(data.total)
+      }
+    } catch (error) {
+      console.error('Transaction fetch error:', error)
+      toaster.create({ 
+        title: 'Error', 
+        description: 'Failed to fetch transactions', 
+        type: 'error' 
+      })
+    } finally {
+      setIsLoading(false)
     }
-  } catch (error) {
-    console.error(error);
-  } finally {
-    setIsLoading(false);
-  }
-}, [username]); // username is a dependency
+  }, [])
 
+  // Fetch transactions when params change
   useEffect(() => {
-    setTransactions([]);
-    fetchUsers(queryParams);
-  }, [queryParams, fetchUsers]);
-
-
-    const totalPages = Math.ceil(totalTransactions / transactionsPerPage)
+    fetchTransactions(queryParams)
+  }, [queryParams, fetchTransactions])
 
   // Reset to page 1 when search changes
   useEffect(() => {
-    setCurrentPage(1);
-  }, [searchTerm]);
+    setCurrentPage(1)
+  }, [searchTerm])
 
-
+  // Helper components
   const StatusBadge = ({ status }) => {
     const colorScheme = {
       successful: 'green',
@@ -167,59 +155,97 @@ export default function MyTransactionComponent({user}) {
     )
   }
 
-  const serviceIcons = {
-    Airtime: FiSmartphone,
-    Data: FiWifi,
-    Electricity: FiZap,
-    Education: FiBook,
-    Cable: FiTv,
-    Fund: FiDollarSign,
+  const formatDate = (dateString) => {
+    if (!dateString) return 'N/A'
+    return new Date(dateString).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    })
   }
 
   const formatDateWithOrdinal = (dateString) => {
+    if (!dateString) return 'N/A'
     const date = new Date(dateString)
     const day = date.getDate()
     const month = date.toLocaleString('en-US', { month: 'long' })
     const year = date.getFullYear()
+    
     const getOrdinal = (n) => {
       const s = ['th', 'st', 'nd', 'rd']
       const v = n % 100
       return n + (s[(v - 20) % 10] || s[v] || s[0])
     }
+    
     return `${getOrdinal(day)} ${month} ${year}`
   }
 
-  const cardBg = 'gray.100'
+  const handleCardClick = (transaction) => {
+    setSelectedTransaction(transaction)
+    setIsDialogOpen(true)
+  }
+
+  // Pagination logic
+  const totalPages = Math.ceil(totalTransactions / TRANSACTIONS_PER_PAGE)
+  const paginationRange = useMemo(() => {
+    const range = []
+    const maxVisiblePages = 3
+    
+    if (totalPages <= maxVisiblePages) {
+      for (let i = 1; i <= totalPages; i++) {
+        range.push(i)
+      }
+    } else {
+      const half = Math.floor(maxVisiblePages / 2)
+      let start = Math.max(1, currentPage - half)
+      const end = Math.min(totalPages, start + maxVisiblePages - 1)
+      
+      if (end - start + 1 < maxVisiblePages) {
+        start = Math.max(1, end - maxVisiblePages + 1)
+      }
+      
+      for (let i = start; i <= end; i++) {
+        range.push(i)
+      }
+    }
+    
+    return range
+  }, [currentPage, totalPages])
 
   return (
-    <Box minH="100vh" bg="gray.50" color="black">
+    <Box 
+      minH="100vh" 
+      bg="gray.50"
+      bgImage="url('https://www.transparenttextures.com/patterns/exclusive-paper.png')"
+      bgRepeat="repeat"
+      color="black"
+    >
+      {isLoading && (
+        <Flex
+          position="fixed"
+          top="0"
+          left="0"
+          right="0"
+          bottom="0"
+          bg="rgba(255, 255, 255, 0.8)"
+          align="center"
+          justify="center"
+          zIndex={9999}
+        >
+          <Spinner size="xl" />
+        </Flex>
+      )}
 
-        {isLoading && (
-              
-            <Flex
-              position="fixed"
-              top="0"
-              left="0"
-              right="0"
-              bottom="0"
-              bg="rgba(255, 255, 255, 0.8)"
-              align="center"
-              justify="center"
-              zIndex={9999}
-            >
-              <Spinner size="xl" />
-            </Flex>
-          
-        
-            )
-          }
-
-
-      <NavBar isAdmin={userdetails?.data.isAdmin} name={userdetails?.data.username} />
+      <NavBar isAdmin={userdetails?.data?.isAdmin} name={userdetails?.data?.username} />
 
       <Box p={6}>
-        <Flex justify="space-between" align="center" mb={8}>
-          <Heading size="lg">My Transactions</Heading>
+        <Flex justify="space-between" align="center" mb={3}>
+          <Heading color="black" size="lg">
+            <HStack spacing={2}>
+              <FiClock /> 
+              <Text>My Transactions</Text>
+            </HStack>
+          </Heading>
         </Flex>
 
         <Flex mb={6} gap={4} direction={{ base: 'column', md: 'row' }}>
@@ -227,10 +253,7 @@ export default function MyTransactionComponent({user}) {
             <Input
               placeholder="Search transactions..."
               value={searchTerm}
-              onChange={(e) => {
-                setSearchTerm(e.target.value)
-                setCurrentPage(1)
-              }}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
           </InputGroup>
         </Flex>
@@ -246,28 +269,25 @@ export default function MyTransactionComponent({user}) {
                 borderWidth="1px"
                 align="center"
                 fontSize="sm"
+                cursor="pointer"
+                _hover={{ bg: 'gray.200' }}
+                transition="background 0.2s"
                 onClick={() => handleCardClick(tx)}
               >
                 <Avatar.Root size="xs" mr={2}>
                   <Avatar.Fallback>
-                    <Icon as={serviceIcons[tx.type] || FiDollarSign } boxSize={3} />
+                    <Icon as={SERVICE_ICONS[tx.type] || FiDollarSign} boxSize={3} />
                   </Avatar.Fallback>
                 </Avatar.Root>
 
                 <Box flex="1" minW={0}>
                   <Flex justify="space-between">
                     <Text fontWeight="medium" isTruncated>{tx.type}</Text>
-                    <Text fontWeight="bold">₦ {tx.amount.toLocaleString()}</Text>
+                    <Text fontWeight="bold">₦{tx.amount?.toLocaleString() || '0'}</Text>
                   </Flex>
                   <Flex justify="space-between" color="gray.500">
-                    <Text fontSize="xs" isTruncated>{tx.recipient}</Text>
-                    <Text fontSize="xs">
-                      {new Date(tx.date).toLocaleDateString('en-US', {
-                        month: 'short',
-                        day: 'numeric',
-                        year: '2-digit',
-                      })}
-                    </Text>
+                    <Text fontSize="xs" isTruncated>{tx.recipient || 'N/A'}</Text>
+                    <Text fontSize="xs">{formatDate(tx.date)}</Text>
                   </Flex>
                 </Box>
 
@@ -278,110 +298,104 @@ export default function MyTransactionComponent({user}) {
             ))
           ) : (
             <Box textAlign="center" py={4} color="gray.500">
-              No transactions found
+              {isLoading ? 'Loading transactions...' : 'No transactions found'}
             </Box>
           )}
         </Stack>
 
-        <VStack alignItems="start">
-          <Dialog.Root
-            colorPalette="gray"
-            placement="center"
-            size="full"
-            closeOnInteractOutside={false}
-            motionPreset="slide-in-bottom"
-            lazyMount
-            open={open}
-            onOpenChange={(e) => setOpen(e.open)}
-          >
-            <Portal>
-              <Dialog.Backdrop />
-              <Dialog.Positioner>
-                <Dialog.Content>
-                  <Dialog.Header>
-                    <Dialog.Title>Transaction Details</Dialog.Title>
-                  </Dialog.Header>
-                  <Dialog.Body pb="8">
-                    <DataList.Root orientation="horizontal">
-                      <DataList.Item>
-                        <DataList.ItemLabel>Status</DataList.ItemLabel>
-                        <DataList.ItemValue>
-                          <StatusBadge status={selectedTransaction?.status} />
-                        </DataList.ItemValue>
-                      </DataList.Item>
-                      <DataList.Item>
-                        <DataList.ItemLabel>Type</DataList.ItemLabel>
-                        <DataList.ItemValue>{selectedTransaction?.description}</DataList.ItemValue>
-                      </DataList.Item>
-                      <DataList.Item>
-                        <DataList.ItemLabel>Amount</DataList.ItemLabel>
-                        <DataList.ItemValue>₦{selectedTransaction?.amount?.toLocaleString()}</DataList.ItemValue>
-                      </DataList.Item>
-                      <DataList.Item>
-                        <DataList.ItemLabel>Description</DataList.ItemLabel>
-                        <DataList.ItemValue>{selectedTransaction?.comment}</DataList.ItemValue>
-                      </DataList.Item>
-                      <DataList.Item>
-                        <DataList.ItemLabel>Date</DataList.ItemLabel>
-                        <DataList.ItemValue>
-                          {selectedTransaction?.date && formatDateWithOrdinal(selectedTransaction.date)}
-                        </DataList.ItemValue>
-                      </DataList.Item>
-                    </DataList.Root>
-                  </Dialog.Body>
-                  <Dialog.CloseTrigger asChild>
-                    <CloseButton size="sm" />
-                  </Dialog.CloseTrigger>
-                </Dialog.Content>
-              </Dialog.Positioner>
-            </Portal>
-          </Dialog.Root>
-        </VStack>
+        {/* Transaction Details Dialog */}
+        <Dialog.Root
+          colorPalette="gray"
+          placement="center"
+          size="full"
+          closeOnInteractOutside={false}
+          motionPreset="slide-in-bottom"
+          lazyMount
+          open={isDialogOpen}
+          onOpenChange={(e) => setIsDialogOpen(e.open)}
+        >
+          <Portal>
+            <Dialog.Backdrop />
+            <Dialog.Positioner>
+              <Dialog.Content>
+                <Dialog.Header>
+                  <Dialog.Title>Transaction Details</Dialog.Title>
+                </Dialog.Header>
+                <Dialog.Body pb="8">
+                  <DataList.Root orientation="horizontal">
+                    <DataList.Item>
+                      <DataList.ItemLabel>Status</DataList.ItemLabel>
+                      <DataList.ItemValue>
+                        <StatusBadge status={selectedTransaction?.status} />
+                      </DataList.ItemValue>
+                    </DataList.Item>
+                    <DataList.Item>
+                      <DataList.ItemLabel>Type</DataList.ItemLabel>
+                      <DataList.ItemValue>{selectedTransaction?.description || 'N/A'}</DataList.ItemValue>
+                    </DataList.Item>
+                    <DataList.Item>
+                      <DataList.ItemLabel>Amount</DataList.ItemLabel>
+                      <DataList.ItemValue>₦{selectedTransaction?.amount?.toLocaleString() || '0'}</DataList.ItemValue>
+                    </DataList.Item>
+                    <DataList.Item>
+                      <DataList.ItemLabel>Description</DataList.ItemLabel>
+                      <DataList.ItemValue>{selectedTransaction?.comment || 'N/A'}</DataList.ItemValue>
+                    </DataList.Item>
+                    <DataList.Item>
+                      <DataList.ItemLabel>Date</DataList.ItemLabel>
+                      <DataList.ItemValue>
+                        {selectedTransaction?.date && formatDateWithOrdinal(selectedTransaction.date)}
+                      </DataList.ItemValue>
+                    </DataList.Item>
+                  </DataList.Root>
+                </Dialog.Body>
+                <Dialog.CloseTrigger asChild>
+                  <CloseButton size="sm" />
+                </Dialog.CloseTrigger>
+              </Dialog.Content>
+            </Dialog.Positioner>
+          </Portal>
+        </Dialog.Root>
 
         {/* Pagination */}
-          <Flex align="center" mt={8}>
-            <Text fontSize="sm" color="gray.500">
-              Showing {(currentPage - 1) * transactionsPerPage + 1}–
-              {Math.min(currentPage * transactionsPerPage, totalTransactions)} of {totalTransactions} transactions
+        {totalTransactions > 0 && (
+          <Flex direction="column" mt={8}>
+            <Text fontSize="sm" color="gray.500" mb={2}>
+              Showing {(currentPage - 1) * TRANSACTIONS_PER_PAGE + 1} -{' '}
+              {Math.min(currentPage * TRANSACTIONS_PER_PAGE, totalTransactions)} of{' '}
+              {totalTransactions} transactions
             </Text>
-          </Flex>
-          <Flex align="center" mt={3}>
-            <ButtonGroup size="xs" isAttached variant="subtle">
+            
+            <ButtonGroup size="sm" isAttached variant="outline">
               <Button
                 onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                 isDisabled={currentPage === 1}
+                variant='solid'
               >
-                <FiChevronLeft /> Previous
+              <FiChevronLeft />  Prev
               </Button>
-  
-              {Array.from({ length: Math.min(3, totalPages) }).map((_, idx) => {
-                let pageNum
-                if (totalPages <= 5) pageNum = idx + 1
-                else if (currentPage <= 3) pageNum = idx + 1
-                else if (currentPage >= totalPages - 2) pageNum = totalPages - 4 + idx
-                else pageNum = currentPage - 2 + idx
-  
-                return (
-                  <Button
-                    key={pageNum}
-                    onClick={() => setCurrentPage(pageNum)}
-                    variant={currentPage === pageNum ? 'solid' : 'subtle'}
-                    colorPalette={currentPage === pageNum ? 'blue' : 'gray'}
-                    isDisabled={currentPage === totalPages}
-                  >
-                    {pageNum}
-                  </Button>
-                )
-              })}
-  
+              
+              {paginationRange.map(page => (
+                <Button
+                  key={page}
+                  onClick={() => setCurrentPage(page)}
+                  variant={currentPage === page ? 'solid' : 'subtle'}
+                  colorScheme={currentPage === page ? 'blue' : 'gray'}
+                >
+                  {page}
+                </Button>
+              ))}
+              
               <Button
                 onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                 isDisabled={currentPage === totalPages}
+                variant='solid'
               >
                 Next <FiChevronRight />
               </Button>
             </ButtonGroup>
           </Flex>
+        )}
       </Box>
     </Box>
   )

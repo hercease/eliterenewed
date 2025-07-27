@@ -29,6 +29,7 @@ import { toaster } from "@/components/ui/toaster"
 import { useForm  } from 'react-hook-form'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
+import { FiSmartphone } from "react-icons/fi"
 const NavBar = dynamic(() => import('@/components/ui/sidebar'), {
   ssr: false,
   loading: () => <Spinner />
@@ -67,7 +68,7 @@ export default function AirtimeRechargeComponent({user}) {
       description: "Network 1",
       img: "/airtel.png",
       api: "ringo",
-      product_id: 'MFIN-1-OR'
+      product_id: 'MFIN-1-OR',
     },
     {
       label: "MTN",
@@ -217,7 +218,7 @@ export default function AirtimeRechargeComponent({user}) {
     }
 
     setOpen(true);
-    console.log(data);
+    //console.log(data);
 
     setPhone(getValues('phone'));
     setAmount(getValues('amount'));
@@ -235,18 +236,29 @@ export default function AirtimeRechargeComponent({user}) {
       formData.append('phone', phone)
       formData.append('username', user)
       
-      console.log(formData.toString());
+      //console.log(formData.toString());
 
-     
       const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/airtimepay`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: formData.toString(),
       });
 
-      const resp = await res.json();
-
       setLoading(false);
+
+      if (!res.ok) {
+        const text =  res.text();
+          toaster.create({
+              title: 'Error',
+              description: `Server error ${res.status}: ${text}`,
+              status: 'error',
+              duration: 5000,
+              type: "error"
+          })
+          return;
+      }
+
+      const resp = await res.json();
 
       if (resp.status) {
         toaster.create({ title: 'Success', description: resp?.message, type: 'success' });
@@ -274,11 +286,23 @@ export default function AirtimeRechargeComponent({user}) {
 
 
   return (
-    <Box minH="100vh" bg="gray.50">
+    <Box 
+      minH="100vh" 
+      bg="gray.50"
+      bgImage="url('https://www.transparenttextures.com/patterns/exclusive-paper.png')"
+      bgRepeat="repeat"
+      bgSize="auto"
+    >
       <NavBar isAdmin={userdetails?.data.isAdmin} name={userdetails?.data.username} />
       <Box p={6} color="black">
-        <Flex justify="space-between" align="center" mb={8}>
-          <Heading size="lg">Airtime Recharge</Heading>
+
+        <Flex justify="space-between" align="center" mb={3}>
+          <Heading color="black" size="lg">
+            <HStack spacing={2}>
+              <FiSmartphone />
+              Airtime Recharge
+            </HStack>
+          </Heading>
         </Flex>
 
                 <Dialog.Root
@@ -338,6 +362,7 @@ export default function AirtimeRechargeComponent({user}) {
                     </Portal>
                   </Dialog.Root>
 
+    <Box placeSelf="center">
         <form onSubmit={handleSubmit(onSubmit)}>
 
           <Stack mb="2" spacing={2}>
@@ -427,6 +452,7 @@ export default function AirtimeRechargeComponent({user}) {
             Continue
           </Button>
         </form>
+      </Box>
       </Box>
     </Box>
   )

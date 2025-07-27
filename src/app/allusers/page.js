@@ -3,11 +3,11 @@ import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 
 export const metadata = {
-  title: "Elite | Users Management",
-  description: "Manage all user accounts, balances, and transactions on Elite Global Network",
-  metadataBase: new URL('https://eliteglobalnetwork.com.ng'), // Required for absolute URLs
+  title: "Admin Portal | User Management - Elite Global Network",
+  description: "Secure administrator interface for user account management",
+  metadataBase: new URL('https://eliteglobalnetwork.com.ng'),
   alternates: {
-    canonical: '/allusers' // Canonical URL
+    canonical: 'https://eliteglobalnetwork.com.ng/allusers',
   },
   icons: {
     icon: [
@@ -20,56 +20,44 @@ export const metadata = {
       { url: '/favicon/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
     ],
   },
-  openGraph: {
-    title: "Elite | User Management Dashboard",
-    description: "Administrator portal for managing all Elite Global Network user accounts",
-    url: "https://eliteglobalnetwork.com.ng/allusers",
-    siteName: "Elite Global Network",
-    images: [
-      {
-        url: "https://eliteglobalnetwork.com.ng/elite_png.png", // Absolute URL
-        width: 1200,
-        height: 630,
-        alt: "Elite Global Network User Dashboard",
-      },
-    ],
-    locale: "en_US",
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Elite | Users Management",
-    description: "Manage all Elite Global Network user accounts and transactions",
-    images: {
-      url: "https://eliteglobalnetwork.com.ng/elite_png.png", // Absolute URL
-      alt: "Elite Global Network User Dashboard",
-    },
-    creator: "@EliteGlobalNet", // Optional Twitter handle
-  },
   robots: {
-    index: true,
-    follow: true,
-    nocache: false,
+    index: false, // Critical for admin pages
+    follow: false,
+    nocache: true, // Prevent caching of sensitive user data
     googleBot: {
-      index: true,
-      follow: true,
-      noimageindex: false,
+      index: false,
+      follow: false,
+      noimageindex: true,
+      'max-image-preview': 'none', // Disable image previews
     },
   },
+  // Minimal openGraph for security
+  openGraph: {
+    title: "Admin Portal - Elite Global Network",
+    description: "Secure management interface",
+    url: "https://eliteglobalnetwork.com.ng/",
+    images: [{
+      url: "https://eliteglobalnetwork.com.ng/elite_png.png",
+      width: 1200,
+      height: 630,
+      alt: "Elite Global Network Admin Portal",
+    }],
+  },
+  // Explicitly remove Twitter cards for security
+  twitter: null
 };
 
 export default async function AllUsers() {
-
-const cookieStore = await cookies();
+  const cookieStore = await cookies();
   const token = cookieStore.get('elitetoken')?.value;
 
   if (!token) {
     redirect('/login');
   }
 
-  return (
-    
-    <UsersComponent user={token} />
-      
-  )
+  // Recommended: Add admin role verification
+  // const isAdmin = await verifyAdminRole(token);
+  // if (!isAdmin) redirect('/403');
+
+  return <UsersComponent user={token} />;
 }

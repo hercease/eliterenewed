@@ -5,13 +5,10 @@ import {
   Flex,
   Heading,
   Dialog,
-  FormLabel,
   Input,
   InputGroup,
   Spinner,
   Button,
-  Text,
-  Icon,
   CloseButton,
   Field,
   Stack,
@@ -20,14 +17,14 @@ import {
   DataList,
   createListCollection,
   Avatar,
-  HStack,
-  useSelectContext
+  HStack
 } from '@chakra-ui/react'
 import { useState, useEffect, useMemo } from 'react'
 import { toaster } from "@/components/ui/toaster"
 import NavBar from '@/components/ui/sidebar'
 import { useForm  } from 'react-hook-form'
 import dynamic from 'next/dynamic'
+import { FiSmartphone, FiZap } from "react-icons/fi"
 const FaIdCard = dynamic(() =>
   import('react-icons/fa').then(mod => mod.FaIdCard), {
   ssr: false,
@@ -52,8 +49,7 @@ export default function ElectricityComponent({user}) {
   const [meterNo, setMeterNo] = useState('')
   const [customerName, setcustomerName] = useState('')
   const [isHideButton, setisHideButton] = useState(false)
-
-    const [hasMounted, setHasMounted] = useState(false)
+  const [hasMounted, setHasMounted] = useState(false)
 
  useEffect(() => {
   if (!user) return;
@@ -74,9 +70,9 @@ export default function ElectricityComponent({user}) {
         })
       ]);
 
-      const networkDataJson = await networkRes.json();
+      const networkDataJson = networkRes.ok ? await networkRes.json() : [];
       console.log(networkDataJson);
-      const profileData = await profileRes.json();
+      const profileData = profileRes.ok ? await profileRes.json() : [];
 
       setNetworkData(networkDataJson);
       setUserDetails(profileData);
@@ -97,10 +93,7 @@ export default function ElectricityComponent({user}) {
   fetchData();
 }, [user]);
 
-
-
-console.log(networks);
-
+//console.log(selectedNetwork);
 
   const onSubmit = (data) => {
 
@@ -127,153 +120,176 @@ console.log(networks);
 
   };
 
-  const handleConfirmedSubmit = async (data) => { 
+
+  const handleConfirmedSubmit = async (data) => {
+    try {
       setOpen(false);
       setLoading(true);
-      const formData = new URLSearchParams()
-      formData.append('network_name', selectedNetwork?.label)
-      formData.append('network_code', selectedNetwork?.product_id)
-      formData.append('api', selectedNetwork?.api)
-      formData.append('amount', amount)
-      formData.append('phone', phone)
-      formData.append('username', user)
-      
-      console.log(formData.toString());
 
-     
-      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/airtimepay`, {
+      if (!selectedNetwork?.code || !selectedNetwork?.api || !data.meter_no || !data.amount || !data.phone || !user || !customerName) {
+          toaster.create({
+            title: 'Error',
+            description: 'Missing required input fields.',
+            type: 'error',
+          });
+          return;
+      }
+
+      const payload = {
+        disco: selectedNetwork.code,
+        meter_no: data.meter_no,
+        api: selectedNetwork.api,
+        amount : data.amount,
+        phone: data.phone,
+        username: user,
+        customer_name: customerName,
+      };
+
+      const formData = new URLSearchParams(payload);
+
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/electricitypay`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: formData.toString(),
       });
 
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(`Server error ${res.status}: ${text}`);
+      }
+
       const resp = await res.json();
 
+      toaster.create({
+        title: resp.status ? 'Success' : 'Error',
+        description: resp.message,
+        type: resp.status ? 'success' : 'error',
+      });
+
+    } catch (error) {
+
+      console.error("Electricity Payment Error:", error);
+      toaster.create({
+        title: 'Error',
+        description: error.message || 'An unexpected error occurred',
+        type: 'error',
+      });
+
+    } finally {
       setLoading(false);
+    }
+  };
 
-      if (resp.status) {
-        toaster.create({ title: 'Success', description: resp?.message, type: 'success' });
-      } else {
-        toaster.create({ title: 'Error', description: resp?.message, type: 'error' });
-      }
-
-  }
-
-  console.log(selectedNetwork)
 
   const fakeSmartcardValidation = async () => {
-      try {
-          if (!selectedNetwork) {
-              toaster.create({
-                  title: 'Error',
-                  description: 'Select network',
-                  status: 'error',
-                  duration: 5000,
-                  isClosable: true,
-                  type: "error"
-              })
-              return
-          }
-  
-          const smartCardNo = getValues('meter_no');
-          if (!smartCardNo?.trim()) {
-              toaster.create({
-                  title: 'Error',
-                  description: 'Enter meter no',
-                  status: 'error',
-                  duration: 5000,
-                  isClosable: true,
-                  type: "error"
-              })
-              return
-          }
-  
-  
-          setIsValidating(true)
-          const formData = new URLSearchParams()
-          formData.append('meter_no', getValues('meter_no'))
-          setMeterNo(getValues('meter_no'));
-  
-          const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/validatemeterno`, {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/x-www-form-urlencoded',
-          },
-              body: formData.toString(),
-          })
-  
-          // ✅ Check if response was OK
-          if (!response.ok) {
-              const errorText = await response.text() // to show full error if JSON fails
-              throw new Error(`API error: ${response.status} - ${errorText}`)
-          }
-  
-          const data = await response.json()
-          console.log(data)
-          if(data.status){
-  
-              setcustomerName(data.customerName);
-  
-              setisHideButton(true)
-              setIsValidating(false)
-              setValidationSuccess(true)
-  
-          } else {
-  
-              setValidationSuccess(false)
-              setIsValidating(false)
-  
-              toaster.create({
-                  title: 'Error',
-                  description: data.message,
-                  status: 'error',
-                  duration: 5000,
-                  isClosable: true,
-                  type: "error"
-              })
-
-          }
-  
-      } catch (error) {
-  
-          console.error("Validation Error:", error)
-  
-          toaster.create({
-            title: 'Error',
-            description: error,
-            status: 'error',
-            duration: 5000,
-            isClosable: true,
-          })
-  
-      } finally {
-          setIsLoading(false)
-      }
+    try {
+      const smartCardNo = getValues('meter_no')?.trim();
+      
+      if (!selectedNetwork) {
+        toaster.create({
+          title: 'Error',
+          description: 'Select network',
+          type: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+        return;
       }
 
-  const SelectValue = () => {
-    const select = useSelectContext()
-    const items = select.selectedItems
+      if (!smartCardNo) {
+        toaster.create({
+          title: 'Error',
+          description: 'Enter meter no',
+          type: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+        return;
+      }
 
-    return (
-      <Select.ValueText placeholder="Select plan">
-        <HStack>
-          <Avatar.Root shape="full" size="2xs">
-            <Avatar.Image src={items[0]?.img} alt={items[0]?.name} />
-          </Avatar.Root>
-          {items[0]?.name} - {items[0]?.description}
-        </HStack>
-      </Select.ValueText>
-    )
-  }
+      setIsValidating(true);
+      setMeterNo(smartCardNo);
+
+      const formData = new URLSearchParams();
+      formData.append('meter_no', smartCardNo);
+      formData.append('api', selectedNetwork?.api);
+      formData.append('disco', selectedNetwork?.code)
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/validatemeterno`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: formData.toString(),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`API error: ${response.status} - ${errorText}`);
+      }
+
+      const data = await response.json();
+      console.log(data);
+
+      if (data.status) {
+        setcustomerName(data.message);
+        setisHideButton(true);
+        setValidationSuccess(true);
+      } else {
+        setValidationSuccess(false);
+        toaster.create({
+          title: 'Error',
+          description: data.message,
+          type: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+      }
+    } catch (error) {
+      console.error("Validation Error:", error);
+      toaster.create({
+        title: 'Error',
+        description: error?.message || "An unexpected error occurred",
+        type: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    } finally {
+      setIsValidating(false);
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const subscription = watch((value, { name }) => {
+      if (name === 'meter_no') {
+        // When meter number is cleared or changed
+        if (!value.meter_no || value.meter_no !== meterNo) {
+          setValidationSuccess(false);
+          setisHideButton(false);
+          setcustomerName('');
+        }
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [watch, meterNo]);
 
 
   return (
-    <Box minH="100vh" bg="gray.50">
+    <Box  
+      minH="100vh" 
+      bg="gray.50"
+      bgImage="url('https://www.transparenttextures.com/patterns/exclusive-paper.png')"
+      bgRepeat="repeat"
+      bgSize="auto"
+    >
       <NavBar isAdmin={userdetails?.data.isAdmin} name={userdetails?.data.username} />
       <Box p={6} color="black">
-        <Flex justify="space-between" align="center" mb={8}>
-          <Heading size="lg">Electricity Recharge</Heading>
+        <Flex justify="space-between" align="center" mb={3}>
+          <Heading color="black" size="lg">
+            <HStack spacing={2}>
+              <FiZap />
+              Electricity Recharge
+            </HStack>
+          </Heading>
         </Flex>
             {networks && (
                 <Dialog.Root
@@ -359,7 +375,7 @@ console.log(networks);
               <Select.Label>Select Network</Select.Label>
               <Select.Control>
                 <Select.Trigger>
-                  <SelectValue />
+                  <Select.ValueText placeholder="Select framework" />
                 </Select.Trigger>
                 <Select.IndicatorGroup>
                   <Select.Indicator />
@@ -368,7 +384,7 @@ console.log(networks);
               <Portal>
                 <Select.Positioner>
                   <Select.Content>
-                    {networks.items.map((network) => (
+                    {networks && networks.items.map((network) => (
                       <Select.Item item={network} key={network.value}>
                         <Stack gap="0">
                           <Select.ItemText>
@@ -392,13 +408,13 @@ console.log(networks);
             <InputGroup
                 startElement={<FaIdCard /> || null}
                 endElement={
-                isValidating ? (
-                    <Spinner size="sm" />
-                ) : validationSuccess ? null : (
-                    <Button size="xs" onClick={fakeSmartcardValidation}>
-                    Validate
-                    </Button>
-                )
+                  isValidating ? (
+                      <Spinner size="sm" />
+                  ) : validationSuccess ? null : (
+                      <Button size="xs" onClick={fakeSmartcardValidation}>
+                      Validate
+                      </Button>
+                  )
                 }
             >
                 <Input
@@ -407,6 +423,14 @@ console.log(networks);
                     borderColor="#9ca3af"
                     type="text"
                     {...register('meter_no',{ required: true  })}
+                     onChange={(e) => {
+                    // Clear validation if user edits the field
+                    if (customerName && e.target.value !== meterNo) {
+                      setcustomerName('');
+                      setValidationSuccess(false);
+                      setisHideButton(false);
+                    }
+                  }}
                 />
                 
             </InputGroup>
@@ -425,6 +449,23 @@ console.log(networks);
                 />
               </InputGroup>
               <Field.HelperText color="red">{errors.amount?.message}</Field.HelperText>
+            </Field.Root>
+
+            <Field.Root id="phone">
+              <Field.Label color="black">Phone no</Field.Label>
+              <InputGroup startElement={<FiSmartphone />}>
+                <Input 
+                  placeholder="Enter Phone no" 
+                  color="black" 
+                  borderColor="#9ca3af" 
+                  type="number"
+                  {...register("phone",{ required: true, minLength: "Minimum input is 11 characters", maxLength: "Maximum input of 11 characters is required" })} 
+                />
+              </InputGroup>
+
+              {errors.phone?.type === 'required' && <Field.HelperText color="red"> Phone is required</Field.HelperText>}
+              {errors.phone?.type === 'minLength' && <Field.HelperText color="red"> Minimum input is 11 characters</Field.HelperText>}
+              {errors.phone?.type === 'maxLength' && <Field.HelperText color="red"> Maximum input of 11 characters is required</Field.HelperText>}
             </Field.Root>
 
             

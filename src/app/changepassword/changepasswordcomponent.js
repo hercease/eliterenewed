@@ -4,11 +4,7 @@ import {
   Box,
   Flex,
   Heading,
-  FormControl,
-  FormLabel,
-  Input,
-  InputGroup,
-  InputRightElement,
+  HStack,
   Button,
   Text,
   Icon,
@@ -22,7 +18,7 @@ import NavBar from '@/components/ui/sidebar'
 import { PasswordInput } from "@/components/ui/password-input"
 import Link from 'next/link'
 import { useForm  } from 'react-hook-form'
-
+import { FiKey } from "react-icons/fi";
 
 export default function ChangePasswordComponent({user}) {
 
@@ -113,14 +109,26 @@ export default function ChangePasswordComponent({user}) {
   
 
   return (
-      <Box minH="100vh" bg="gray.50">
+      <Box 
+        minH="100vh"
+        bg="gray.50"
+        bgImage="url('https://www.transparenttextures.com/patterns/exclusive-paper.png')"
+        bgRepeat="repeat"
+        bgSize="auto"
+      >
         <NavBar isAdmin={userdetails?.data.isAdmin} name={userdetails?.data.username} /> 
 
         <Box p={6} color="black">
-            <Flex justify="space-between" align="center" mb={8}>
-            <Heading size="lg">Change Password</Heading>
-            </Flex>
 
+            <Flex justify="space-between" align="center" mb={3}>
+              <Heading color="black" size="lg">
+                <HStack spacing={2}>
+                  <FiKey /> Change Password
+                </HStack>
+              </Heading>
+            </Flex>
+            
+          <Box minW={{ base: "90%", md: "400px", lg: "500px" }} placeSelf="center">
             <form onSubmit={handleSubmit(onSubmit)}>
                 <Stack mb="2" spacing={2}>
                 <Field.Root id="presentpassword">
@@ -154,7 +162,7 @@ export default function ChangePasswordComponent({user}) {
                 </Button>
 
             </form>
-
+            </Box>
         </Box>
     </Box> 
   )

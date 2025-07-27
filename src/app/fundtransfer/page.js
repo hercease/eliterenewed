@@ -3,34 +3,34 @@ import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 
 export const metadata = {
-  title: "Elite | Fund Transfer",
-  description: "Wallet Transfer",
-  metadataBase: new URL('https://eliteglobalnetwork.com.ng'), // Required for absolute URLs
+  title: "Elite Global Network | Send Funds Between Members Instantly",
+  description: "Transfer funds securely between Elite Global Network members. Fast internal wallet payments with zero wait time.",
+  metadataBase: new URL("https://eliteglobalnetwork.com.ng"),
   alternates: {
-    canonical: '/fundtranfer' // Canonical URL
+    canonical: "/fundtransfer",
   },
   icons: {
     icon: [
-      { url: '/favicon/favicon.ico' },
-      { url: '/favicon/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
-      { url: '/favicon/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+      { url: "/favicon/favicon.ico" },
+      { url: "/favicon/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon/favicon-32x32.png", sizes: "32x32", type: "image/png" },
     ],
     apple: [
-      { url: '/favicon/apple-touch-icon.png' },
-      { url: '/favicon/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+      { url: "/favicon/apple-touch-icon.png" },
+      { url: "/favicon/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
     ],
   },
   openGraph: {
-    title: "Elite | Fund Transfer",
-    description: "Wallet Transfer",
+    title: "Elite Members | Secure Fund Transfer",
+    description: "Fast and seamless wallet-to-wallet fund transfers within the Elite Global Network platform. Send payments between members without delay.",
     url: "https://eliteglobalnetwork.com.ng/fundtransfer",
     siteName: "Elite Global Network",
     images: [
       {
-        url: "https://eliteglobalnetwork.com.ng/elite_png.png", // Absolute URL
+        url: "https://eliteglobalnetwork.com.ng/elite_png.png",
         width: 1200,
         height: 630,
-        alt: "Elite Global Network Fund Transfer",
+        alt: "Transfer funds between Elite members",
       },
     ],
     locale: "en_US",
@@ -38,27 +38,19 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Elite | Fund Transfer",
-    description: "Wallet Transfe",
+    title: "Elite Network | Member Fund Transfers",
+    description: "Send payments directly to Elite members with secure wallet-to-wallet transfer.",
     images: {
-      url: "https://eliteglobalnetwork.com.ng/elite_png.png", // Absolute URL
-      alt: "Fund User wallet",
+      url: "https://eliteglobalnetwork.com.ng/elite_png.png",
+      alt: "Elite Member Transfer Page",
     },
-    creator: "@EliteGlobalNet", // Optional Twitter handle
-  },
-  robots: {
-    index: true,
-    follow: true,
-    nocache: false,
-    googleBot: {
-      index: true,
-      follow: true,
-      noimageindex: false,
-    },
+    creator: "@EliteNetwork", // Update if you have an official Twitter handle
   },
 };
 
-export default async function FundUserWalletPage() {
+
+
+export default async function FundTransferPage() {
 
 const cookieStore = await cookies();
   const token = cookieStore.get('elitetoken')?.value;
