@@ -71,7 +71,7 @@ export default function KycComponent({ user }) {
                 banksRes.json()
             ]);
 
-            console.log(profileData);
+            //console.log(profileData);
 
             setUserDetails(profileData);
             setBanks(banksData.message);           // You’ll need to define this state
@@ -144,9 +144,12 @@ export default function KycComponent({ user }) {
                     isClosable: true,
                 });
 
+                reset();
+
                 refreshData();
     
             } else {
+
                 toaster.create({
                     title: 'Error',
                     description: resp.message,
@@ -155,6 +158,7 @@ export default function KycComponent({ user }) {
                     type: 'error',
                     isClosable: true,
                 });
+                
             }
         } catch (error) {
   
@@ -226,6 +230,8 @@ export default function KycComponent({ user }) {
                 </List.Root>
                 <br />
                 Your information is 100% secure and will only be used for verification purposes in accordance with our privacy policy.
+                <br /><br />
+                Note that for a successful verification, a Nonrefundable fee of ₦50 is required. The fee is used to cover the cost of processing your KYC application and is non-refundable, this only applies after a successful application process.
               </Alert.Description>
             </Alert.Content>
           </Alert.Root>

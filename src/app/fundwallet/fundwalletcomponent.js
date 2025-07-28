@@ -272,7 +272,7 @@ export default function FundWalletComponent({ user }) {
 
               {userdetails?.virtual_account.status == "completed" && (
 
-                <DataList.Root orientation="horizontal">
+                <DataList.Root className="dark" orientation="horizontal">
      
                     <DataList.Item>
                       <DataList.ItemLabel>Bank Name</DataList.ItemLabel>
