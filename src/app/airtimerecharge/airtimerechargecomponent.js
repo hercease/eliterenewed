@@ -30,6 +30,7 @@ import { useForm  } from 'react-hook-form'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
 import { FiSmartphone } from "react-icons/fi"
+import { duration } from '@mui/material'
 const NavBar = dynamic(() => import('@/components/ui/sidebar'), {
   ssr: false,
   loading: () => <Spinner />
@@ -53,7 +54,7 @@ export default function AirtimeRechargeComponent({user}) {
   const [selectedNetwork, setSelectedNetwork] = useState(null)
   const [fetchedNetworks, setFetchedNetworks] = useState([])
   const [open, setOpen] = useState(false)
-  const { register, formState: { errors }, handleSubmit, getValues, watch } = useForm({ mode: 'onChange' })
+  const { register, formState: { errors }, handleSubmit, getValues, watch, reset } = useForm({ mode: 'onChange' })
   const [selectedPlan, setSelectedPlan] = useState(null)
   const [phone, setPhone] = useState('')
   const [amount, setAmount] = useState('')
@@ -252,7 +253,7 @@ export default function AirtimeRechargeComponent({user}) {
               title: 'Error',
               description: `Server error ${res.status}: ${text}`,
               status: 'error',
-              duration: 5000,
+              duration: 7000,
               type: "error"
           })
           return;
@@ -261,9 +262,10 @@ export default function AirtimeRechargeComponent({user}) {
       const resp = await res.json();
 
       if (resp.status) {
-        toaster.create({ title: 'Success', description: resp?.message, type: 'success' });
+        toaster.create({ title: 'Success', description: resp?.message, type: 'success', duration: 7000 });
+        reset();
       } else {
-        toaster.create({ title: 'Error', description: resp?.message, type: 'error' });
+        toaster.create({ title: 'Error', description: resp?.message, type: 'error', duration: 7000 });
       }
 
   }

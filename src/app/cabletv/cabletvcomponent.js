@@ -43,7 +43,7 @@ export default function CableTvComponent({user}) {
   const [customerName, setcustomerName] = useState('')
   const [open, setOpen] = useState(false)
   const [totalprice, setTotalPrice] = useState(0)
-  const { register, formState: { errors }, handleSubmit, getValues, watch } = useForm({ mode: 'onChange' })
+  const { register, formState: { errors }, handleSubmit, getValues, watch, reset } = useForm({ mode: 'onChange' })
   const [periodvalue, setPeriodValue] = useState(1)
   const [userdetails, setUserDetails] = useState(null)
     
@@ -90,7 +90,7 @@ export default function CableTvComponent({user}) {
                 title: 'Error',
                 description: 'Select cable network',
                 status: 'error',
-                duration: 5000,
+                duration: 7000,
                 isClosable: true,
                 type: "error"
             })
@@ -103,7 +103,7 @@ export default function CableTvComponent({user}) {
                 title: 'Error',
                 description: 'Enter Smart card no',
                 status: 'error',
-                duration: 5000,
+                duration: 7000,
                 isClosable: true,
                 type: "error"
             })
@@ -253,7 +253,7 @@ export default function CableTvComponent({user}) {
                 title: 'Error',
                 description: `Server error ${response.status}: ${text}`,
                 status: 'error',
-                duration: 5000,
+                duration: 7000,
                 type: "error"
             })
             return;
@@ -271,13 +271,15 @@ export default function CableTvComponent({user}) {
               type: "success"
           })
 
+          reset();
+
         } else {
 
             toaster.create({
               title: 'Error',
               description: data.message,
               status: 'error',
-              duration: 5000,
+              duration: 7000,
               type: "error"
             })
 
@@ -326,10 +328,9 @@ export default function CableTvComponent({user}) {
         )
     }
 
-console.log(selectedNetwork);
+    //console.log(selectedNetwork);
 
   return (
-
 
     <Box 
       minH="100vh" 

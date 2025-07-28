@@ -26,6 +26,7 @@ import { useColorModeValue } from "@/components/ui/color-mode"
 import { useForm  } from 'react-hook-form'
 import dynamic from 'next/dynamic'
 import { FiSmartphone, FiZap } from "react-icons/fi"
+import { duration } from '@mui/material'
 const FaIdCard = dynamic(() =>
   import('react-icons/fa').then(mod => mod.FaIdCard), {
   ssr: false,
@@ -40,7 +41,7 @@ export default function ElectricityComponent({user}) {
   const [selectedNetwork, setSelectedNetwork] = useState(null)
   const [fetchedNetworks, setFetchedNetworks] = useState([])
   const [open, setOpen] = useState(false)
-  const { register, formState: { errors }, handleSubmit, getValues, watch } = useForm({ mode: 'onChange' })
+  const { register, formState: { errors }, handleSubmit, getValues, watch, reset } = useForm({ mode: 'onChange' })
   const [selectedPlan, setSelectedPlan] = useState(null)
   const [amount, setAmount] = useState(0)
   const [userdetails, setUserDetails] = useState(null)
@@ -86,6 +87,7 @@ export default function ElectricityComponent({user}) {
       toaster.create({
         title: 'Error',
         description: 'Failed to load data',
+        duration : 7000,
         type: 'error'
       });
     }
@@ -105,7 +107,7 @@ export default function ElectricityComponent({user}) {
           title: 'Error',
           description: 'Please select a network',
           status: 'error',
-          duration: 5000,
+          duration: 7000,
           isClosable: true,
           type: 'error'
         });
@@ -132,6 +134,7 @@ export default function ElectricityComponent({user}) {
             title: 'Error',
             description: 'Missing required input fields.',
             type: 'error',
+            duration: 7000,
           });
           return;
       }
@@ -165,7 +168,10 @@ export default function ElectricityComponent({user}) {
         title: resp.status ? 'Success' : 'Error',
         description: resp.message,
         type: resp.status ? 'success' : 'error',
+        duration: 7000,
       });
+      
+      reset();
 
     } catch (error) {
 
@@ -174,6 +180,7 @@ export default function ElectricityComponent({user}) {
         title: 'Error',
         description: error.message || 'An unexpected error occurred',
         type: 'error',
+        duration: 7000,
       });
 
     } finally {
@@ -191,7 +198,7 @@ export default function ElectricityComponent({user}) {
           title: 'Error',
           description: 'Select network',
           type: "error",
-          duration: 5000,
+          duration: 7000,
           isClosable: true,
         });
         return;
@@ -202,7 +209,7 @@ export default function ElectricityComponent({user}) {
           title: 'Error',
           description: 'Enter meter no',
           type: "error",
-          duration: 5000,
+          duration: 7000,
           isClosable: true,
         });
         return;
@@ -234,13 +241,15 @@ export default function ElectricityComponent({user}) {
         setcustomerName(data.message);
         setisHideButton(true);
         setValidationSuccess(true);
+
+
       } else {
         setValidationSuccess(false);
         toaster.create({
           title: 'Error',
           description: data.message,
           type: "error",
-          duration: 5000,
+          duration: 7000,
           isClosable: true,
         });
       }
@@ -250,7 +259,7 @@ export default function ElectricityComponent({user}) {
         title: 'Error',
         description: error?.message || "An unexpected error occurred",
         type: "error",
-        duration: 5000,
+        duration: 7000,
         isClosable: true,
       });
     } finally {

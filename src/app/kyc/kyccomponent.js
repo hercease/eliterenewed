@@ -8,7 +8,7 @@ import {
   FormLabel,
   Input,
   InputGroup,
-  InputRightElement,
+  CloseButton,
   Button,
   Text,
   Icon,
@@ -19,7 +19,7 @@ import {
   List,
   createListCollection,
   useSelectContext,
-  Select,
+  Dialog,
   Portal,
   NativeSelect
 } from '@chakra-ui/react'
@@ -30,6 +30,7 @@ import NavBar from '@/components/ui/sidebar'
 import Link from 'next/link'
 import { FiUser, FiHardDrive, FiSmartphone } from "react-icons/fi"
 import { useForm  } from 'react-hook-form'
+import { useRouter } from 'next/navigation'
 
 export default function KycComponent({ user }) {
 
@@ -39,7 +40,9 @@ export default function KycComponent({ user }) {
   const [isLoading, setIsLoading] = useState(false)
   const [userdetails, setUserDetails] = useState(null)
   const [banks, setBanks] = useState([])
+  const [open, setOpen] = useState(false)
   const { register, formState: { errors }, handleSubmit, getValues, reset, watch } = useForm({ mode: 'onChange' })
+  const router = useRouter()
     
     useEffect(() => { 
     
@@ -50,7 +53,6 @@ export default function KycComponent({ user }) {
               const formData = new URLSearchParams()
               formData.append('username', user)
 
-              
             try {
 
             const [profileRes, banksRes] = await Promise.all([
@@ -69,7 +71,7 @@ export default function KycComponent({ user }) {
                 banksRes.json()
             ]);
 
-            console.log(banksData.message);
+            console.log(profileData);
 
             setUserDetails(profileData);
             setBanks(banksData.message);           // You’ll need to define this state
@@ -85,12 +87,20 @@ export default function KycComponent({ user }) {
 
       }, [user]);
 
-      console.log(banks);
+      //console.log(banks);
 
     /*const frameworks = useMemo(() => {
         if (!banks?.length) return createListCollection({ items: [] })
         return createListCollection({ items: banks })
       }, [banks])*/
+
+    const onSubmit = (data) => {
+      setOpen(true);
+    }
+
+    const refreshData = () => {
+      router.refresh() // Soft refresh (no full reload)
+    }
 
   const handleFormSubmit = async (data) => {
     
@@ -122,24 +132,26 @@ export default function KycComponent({ user }) {
             }
     
             const resp = await response.json();
-            console.log(resp);
+            //console.log(resp);
     
             if (resp.status) {
                 // Show success toast
                 toaster.create({
                     title: 'Success',
                     description: resp.message,
-                    duration: 5000,
+                    duration: 7000,
                     type: 'success',
                     isClosable: true,
                 });
+
+                refreshData();
     
             } else {
                 toaster.create({
                     title: 'Error',
                     description: resp.message,
                     status: 'error',
-                    duration: 5000,
+                    duration: 7000,
                     type: 'error',
                     isClosable: true,
                 });
@@ -177,7 +189,7 @@ export default function KycComponent({ user }) {
           <Heading size="lg">Kyc Registration</Heading>
         </Flex>
 
-        {userdetails?.virtual_account.status == 0 && userdetails?.virtual_account.reason != "" && (
+        {userdetails?.virtual_account.reason != "" && (
           <Alert.Root mb={4} status="info">
             <Alert.Indicator />
             <Alert.Content>
@@ -189,7 +201,7 @@ export default function KycComponent({ user }) {
           </Alert.Root>
         )}
 
-        {userdetails?.virtual_account.status == 0 && (
+        {userdetails?.virtual_account.status == 'pending' && (
           <Alert.Root status="info" colorPalette="teal">
             <Alert.Indicator />
             <Alert.Content>
@@ -219,7 +231,43 @@ export default function KycComponent({ user }) {
           </Alert.Root>
         )}
 
-        <form onSubmit={handleSubmit(handleFormSubmit)}>
+          <Dialog.Root
+                          key="center"
+                          placement="center"
+                          motionPreset="slide-in-bottom"
+                          closeOnInteractOutside={false}
+                          lazyMount 
+                          open={open}
+                          bgColor="white"
+                          onOpenChange={(e) => setOpen(e.open)}
+                        >
+                          
+                          <Portal>
+                            <Dialog.Backdrop />
+                            <Dialog.Positioner>
+                              <Dialog.Content>
+                                <Dialog.Header>
+                                  <Dialog.Title>Confirmation</Dialog.Title>
+                                </Dialog.Header>
+                                <Dialog.Body>
+                                    You sure you want to proceed?
+                                </Dialog.Body>
+                                <Dialog.Footer>
+                                  <Dialog.ActionTrigger asChild>
+                                    <Button onClick={() => handleFormSubmit(watch())} variant="outline">Continue</Button>
+                                  </Dialog.ActionTrigger>
+                                </Dialog.Footer>
+                                <Dialog.CloseTrigger asChild>
+                                  <CloseButton size="sm" />
+                                </Dialog.CloseTrigger>
+                              </Dialog.Content>
+                            </Dialog.Positioner>
+                          </Portal>
+                        </Dialog.Root>
+
+        {userdetails?.virtual_account.pending == "pending" && (
+
+           <form onSubmit={handleSubmit(onSubmit)}>
 
           <Stack mb="2" mt="5" spacing={2}>
             <Field.Root id="firstname">
@@ -295,6 +343,7 @@ export default function KycComponent({ user }) {
             Continue
           </Button>
         </form>
+        )}
       </Box>
     </Box>
   )

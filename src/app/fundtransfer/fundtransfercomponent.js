@@ -96,7 +96,7 @@ export default function FundTransferComponent({user}) {
               title: 'Error',
               description: `Server error ${resp.status}: ${text}`,
               status: 'error',
-              duration: 5000,
+              duration: 7000,
               type: "error"
           })
           return;
@@ -104,12 +104,12 @@ export default function FundTransferComponent({user}) {
 
       if (resp.status) {
 
-        toaster.create({ title: 'Success', description: resp?.message, type: 'success' });
+        toaster.create({ title: 'Success', description: resp?.message, type: 'success', duration: 7000 });
 
         reset();
 
       } else {
-        toaster.create({ title: 'Error', description: resp?.message, type: 'error' });
+        toaster.create({ title: 'Error', description: resp?.message, type: 'error', duration: 7000 });
       }
   }
 

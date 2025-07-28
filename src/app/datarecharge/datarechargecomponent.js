@@ -53,9 +53,9 @@ export default function DataComponent({user}) {
   const [fetchedNetworks, setFetchedNetworks] = useState([])
   const [hasMounted, setHasMounted] = useState(false)
   const [open, setOpen] = useState(false)
-  const [loading, setLoading] = useState(false)
+  const [areLoading, setAreLoading] = useState(false)
 
-  const { register, formState: { errors }, watch, handleSubmit } = useForm({ mode: 'onChange' })
+  const { register, formState: { errors }, watch, handleSubmit, reset } = useForm({ mode: 'onChange' })
   const [userdetails, setUserDetails] = useState(null)
     
    useEffect(() => {
@@ -112,7 +112,7 @@ const baseNetworks = useMemo(() => createListCollection({ items: baseNetworksDat
                 title: 'Error',
                 description: `Server error ${response.status}: ${text}`,
                 status: 'error',
-                duration: 5000,
+                duration: 7000,
                 type: "error"
             })
             return;
@@ -125,7 +125,7 @@ const baseNetworks = useMemo(() => createListCollection({ items: baseNetworksDat
         title: 'Error',
         description: 'Failed to load data list',
         status: 'error',
-        duration: 5000,
+        duration: 7000,
         isClosable: true,
       })
     } finally {
@@ -172,15 +172,15 @@ const baseNetworks = useMemo(() => createListCollection({ items: baseNetworksDat
   const handleConfirmedSubmit = async (data) => {
     try {
       // Optional UI updates (e.g. modal close, loading spinner)
-      // setOpen(false);
-      // setLoading(true);
+      setOpen(false);
+      setAreLoading(true);
 
       if (!data.network || !data.plan || !data.phone || !selectedPlan?.price || !user) {
         toaster.create({
           title: 'Error',
           description: 'Missing required input fields.',
           type: 'error',
-          duration: 5000,
+          duration: 7000,
           isClosable: true,
         });
         return;
@@ -215,7 +215,10 @@ const baseNetworks = useMemo(() => createListCollection({ items: baseNetworksDat
 
       const resp = await response.json();
 
+      setAreLoading(false);
+
       if (resp.status) {
+
         toaster.create({
           title: 'Success',
           description: resp.message || 'Data purchase successful!',
@@ -223,11 +226,14 @@ const baseNetworks = useMemo(() => createListCollection({ items: baseNetworksDat
           isClosable: true,
           type: 'success',
         });
+        
+        reset();
+
       } else {
         toaster.create({
           title: 'Error',
           description: resp.message || 'Something went wrong',
-          duration: 5000,
+          duration: 7000,
           isClosable: true,
           type: 'error',
         });
@@ -244,7 +250,7 @@ const baseNetworks = useMemo(() => createListCollection({ items: baseNetworksDat
       });
     } finally {
       // Optional loading reset
-      // setLoading(false);
+      setAreLoading(false);
     }
   };
 
@@ -447,7 +453,7 @@ const baseNetworks = useMemo(() => createListCollection({ items: baseNetworksDat
             </Field.Root>
           </Stack>
 
-          <Button background="#0060d1" color="white" type="submit" loading={loading} size="md" w="full">
+          <Button background="#0060d1" color="white" type="submit" loading={areLoading} size="md" w="full">
             Continue
           </Button>
         </form>
