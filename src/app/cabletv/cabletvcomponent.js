@@ -462,7 +462,6 @@ export default function CableTvComponent({user}) {
             <Select.Root
               collection={baseNetworks}
               size="sm"
-              minWidth="320px"
               positioning={{ sameWidth: true }}
               onValueChange={(details) => {
                 const selected = baseNetworks.items.find(
@@ -542,7 +541,6 @@ export default function CableTvComponent({user}) {
                     <Select.Root
                     collection={plans}
                     size="sm"
-                    minWidth="320px"
                     {...register('plans',{ required: "Select your desired plan"  })}
                     onValueChange={(details) => {
                         const selected = plans.items.find(
