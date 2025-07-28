@@ -229,6 +229,7 @@ export default function CableTvComponent({user}) {
       formData.append('total_price', totalprice);
       formData.append('customer_name', customerName);
       formData.append('period', period);
+      formData.append('username', user);
 
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/cablepay`, {
         method: 'POST',
