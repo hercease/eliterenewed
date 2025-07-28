@@ -265,7 +265,7 @@ export default function KycComponent({ user }) {
                           </Portal>
                         </Dialog.Root>
 
-        {userdetails?.virtual_account.pending == "pending" && (
+        {userdetails?.virtual_account.status == "pending" && (
 
            <form onSubmit={handleSubmit(onSubmit)}>
 
