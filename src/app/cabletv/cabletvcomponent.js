@@ -261,6 +261,8 @@ export default function CableTvComponent({user}) {
 
         const resp = response.json();
 
+        console.log(resp);
+
         if(resp.status){
 
           toaster.create({
@@ -592,7 +594,7 @@ export default function CableTvComponent({user}) {
 
                 <Field.Root>
                   <Field.Label color="black">Period</Field.Label>
-                  <NumberInput.Root defaultValue={periodvalue} value={periodvalue} onValueChange={(e) => setPeriodValue(e.value)} minWidth="320px">
+                  <NumberInput.Root defaultValue={periodvalue} value={periodvalue} onValueChange={(e) => setPeriodValue(e.value)}>
                     <NumberInput.Control />
                     <NumberInput.Input {...register('period',{ required: "Enter number of periods"  })} />
                   </NumberInput.Root>
@@ -602,7 +604,6 @@ export default function CableTvComponent({user}) {
                 <Select.Root
                   collection={addons}
                   size="sm"
-                  width="320px"
                   onValueChange={(details) => {
 
                     const selected = addons.items.find(
