@@ -20,6 +20,7 @@ import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { setCookie } from 'nookies'; // You forgot to import this
 import { FiUser, FiUnlock, FiMail, FiUserPlus  } from "react-icons/fi";
+import { useSearchParams } from 'next/navigation'
 
 export default function RegisterComponent() {
 
@@ -39,6 +40,9 @@ export default function RegisterComponent() {
       const formData = new URLSearchParams();
       formData.append('username', data.username);
       formData.append('password', data.password);
+      formData.append('confirm_password', data.confirm_password);
+      formData.append('sponsor', data.sponsor);
+      formData.append('email', data.email);
 
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/runregistration`, {
         method: 'POST',
@@ -90,6 +94,13 @@ export default function RegisterComponent() {
       setIsLoading(false);
     }
   };
+
+  const searchParams = useSearchParams()
+  const userType = searchParams.get('user') // 'FREE'
+
+  console.log(userType)
+
+
 
   return (
     <Flex
@@ -177,6 +188,7 @@ export default function RegisterComponent() {
                   placeholder="Enter sponsor username"
                   color="black"
                   borderColor="#9ca3af"
+                  value={userType}
                 />
                 </InputGroup>
               </Field.Root>
