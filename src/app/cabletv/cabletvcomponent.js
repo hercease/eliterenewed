@@ -232,7 +232,7 @@ export default function CableTvComponent({user}) {
         formData.append('customer_name', customerName)
         formData.append('period', period)
 
-        //console.log(formData);
+        console.log(formData);
 
         //console.log(data.period)
         const response = fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/cablepay`, {
@@ -446,7 +446,7 @@ export default function CableTvComponent({user}) {
                   </Dialog.Body>
                   <Dialog.Footer>
                     <Dialog.ActionTrigger asChild>
-                      <Button loading={loading} onClick={() => handleConfirmedSubmit(watch())} variant="outline">Continue</Button>
+                      <Button onClick={() => handleConfirmedSubmit(watch())} variant="outline">Continue</Button>
                     </Dialog.ActionTrigger>
                   </Dialog.Footer>
                   <Dialog.CloseTrigger asChild>
