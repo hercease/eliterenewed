@@ -40,7 +40,7 @@ export default function FundWalletComponent({ user }) {
   const [showConfirm, setShowConfirm] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [userdetails, setUserDetails] = useState(null)
-  const [maxAmount, setMaxAmount] = useState(userdetails?.virtual_account.status > 0 ? 20000 : 5000)
+  const [maxAmount, setMaxAmount] = useState(userdetails?.virtual_account.status == 'completed' ? 20000 : 5000)
   const { register, formState: { errors }, handleSubmit, getValues, reset, watch } = useForm({ mode: 'onChange' })
   const router = useRouter();
     
@@ -263,14 +263,14 @@ export default function FundWalletComponent({ user }) {
             <Card.Body>
               <Stack gap="4" w="full" spacing={2}>
 
-              {userdetails?.virtual_account.status === 0 && (
+              {userdetails?.virtual_account.status === 'pending' && (
                   <p>Hi {userdetails?.data.username}, Kindly perform the KYC (Know your customer) to have access to the Automated funding, on successful activation, a bank account will be created mainly for funding your wallet on Elite Global Network. Click the button below to get started. <br /> <Button
                     background="#0060d1"
                     color="white" onClick={() => router.push('/kyc')}>Get started</Button></p>
               )}
 
 
-              {userdetails?.virtual_account.status > 0 && (
+              {userdetails?.virtual_account.status == "completed" && (
 
                 <DataList.Root orientation="horizontal">
      
