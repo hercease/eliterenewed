@@ -2,11 +2,11 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { Provider } from "@/components/ui/provider"
 import  PushPrompt  from "@/components/ui/pushprompt"
 import { Toaster, toaster } from "@/components/ui/toaster"
+import WhatsappWidget from '@/components/ui/whatsappwidget';
 import { cookies } from 'next/headers'
 import "./globals.css";
 import theme from '@/theme';
 import { Suspense } from 'react';
-
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -37,6 +37,7 @@ export default async function RootLayout({ children }) {
       <body>
         <Suspense fallback={<div>Loading......</div>}>
           <PushPrompt user={token} />
+          <WhatsappWidget />
           <Provider theme={theme}>
             <Toaster />
             {children}
