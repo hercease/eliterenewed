@@ -210,82 +210,79 @@ export default function CableTvComponent({user}) {
     }
 
 
-  const handleConfirmedSubmit = (data) => { 
+  const handleConfirmedSubmit = async (data) => {
+    try {
+      setOpen(false);
+      setIsLoading(true);
 
-        setOpen(false);
-        setIsLoading(true);
-        const formData = new URLSearchParams()
-        const addon_price = selectedAddons ? parseInt(selectedAddons?.price) : 0;
-        const cable_price = selectedPlan?.price;
-        const period = selectedNetwork=="SHOWMAX" ? parseInt(selectedPlan?.period) : parseInt(periodvalue);
-        //const total_price = selectedNetwork=="SHOWMAX" ? cable_price : period * cable_price + addon_price;
-        //setTotalPrice(total_price);
-        //console.log(total_price);
+      const formData = new URLSearchParams();
+      const addon_price = selectedAddons ? parseInt(selectedAddons?.price) : 0;
+      const cable_price = selectedPlan?.price;
+      const period = selectedNetwork == "SHOWMAX" ? parseInt(selectedPlan?.period) : parseInt(periodvalue);
 
-        formData.append('cable_name', selectedNetwork)
-        formData.append('network_code', selectedPlan?.value)
-        formData.append('network_name', selectedPlan?.name)
-        formData.append('smart_card', getValues('smart_cardno'))
-        formData.append('addon_name', selectedAddons?.name)
-        formData.append('addon_code', selectedAddons?.value)
-        formData.append('total_price', totalprice)
-        formData.append('customer_name', customerName)
-        formData.append('period', period)
+      formData.append('cable_name', selectedNetwork);
+      formData.append('network_code', selectedPlan?.value);
+      formData.append('network_name', selectedPlan?.name);
+      formData.append('smart_card', getValues('smart_cardno'));
+      formData.append('addon_name', selectedAddons?.name ?? '');
+      formData.append('addon_code', selectedAddons?.value ?? '');
+      formData.append('total_price', totalprice);
+      formData.append('customer_name', customerName);
+      formData.append('period', period);
 
-        console.log(formData);
-
-        //console.log(data.period)
-        const response = fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/cablepay`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/cablepay`, {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
+          'Content-Type': 'application/x-www-form-urlencoded',
         },
-            body: formData.toString(),
-        })
+        body: formData.toString(),
+      });
 
-        setIsLoading(false);
+      setIsLoading(false);
 
-        if (!response.ok) {
+      if (!response.ok) {
+        const text = await response.text();
+        toaster.create({
+          title: 'Error',
+          description: `Server error ${response.status}: ${text}`,
+          status: 'error',
+          duration: 7000,
+          type: 'error',
+        });
+        return;
+      }
 
-          const text =  response.text();
+      const resp = await response.json();
 
-            toaster.create({
-                title: 'Error',
-                description: `Server error ${response.status}: ${text}`,
-                status: 'error',
-                duration: 7000,
-                type: "error"
-            })
-            return;
-        }
-
-        const resp = response.json();
-
-        console.log(resp);
-
-        if(resp.status){
-
-          toaster.create({
-              title: 'Success',
-              description: resp.message,
-              duration: 10000,
-              isClosable: true,
-              type: "success"
-          })
-
-
-        } else {
-
-            toaster.create({
-              title: 'Error',
-              description: data.message,
-              status: 'error',
-              duration: 7000,
-              type: "error"
-            })
-
-        }
+      if (resp.status) {
+        toaster.create({
+          title: 'Success',
+          description: resp.message,
+          duration: 10000,
+          isClosable: true,
+          type: 'success',
+        });
+      } else {
+        toaster.create({
+          title: 'Error',
+          description: resp.message ?? 'An error occurred',
+          status: 'error',
+          duration: 7000,
+          type: 'error',
+        });
+      }
+    } catch (error) {
+      setIsLoading(false);
+      toaster.create({
+        title: 'Network Error',
+        description: error.message,
+        status: 'error',
+        duration: 7000,
+        type: 'error',
+      });
     }
+  };
+
 
     const SelectValue = () => {
         const select = useSelectContext()
