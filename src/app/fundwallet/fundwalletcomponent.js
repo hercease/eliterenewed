@@ -167,6 +167,8 @@ export default function FundWalletComponent({ user }) {
             isClosable: true,
           });
 
+          reset(); // Reset form after successful payment
+
         },
         onClose: () => {
           toaster.create({

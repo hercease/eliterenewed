@@ -89,6 +89,8 @@ export default function ChangePasswordComponent({user}) {
             isClosable: true,
           });
 
+          reset();
+
           setIsLoading(false)
 
       } else {

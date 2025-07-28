@@ -227,7 +227,6 @@ const baseNetworks = useMemo(() => createListCollection({ items: baseNetworksDat
           type: 'success',
         });
         
-        reset();
 
       } else {
         toaster.create({

@@ -271,7 +271,6 @@ export default function CableTvComponent({user}) {
               type: "success"
           })
 
-          reset();
 
         } else {
 

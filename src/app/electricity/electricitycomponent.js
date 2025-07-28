@@ -170,8 +170,7 @@ export default function ElectricityComponent({user}) {
         type: resp.status ? 'success' : 'error',
         duration: 7000,
       });
-      
-      reset();
+    
 
     } catch (error) {
 

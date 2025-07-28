@@ -263,7 +263,6 @@ export default function AirtimeRechargeComponent({user}) {
 
       if (resp.status) {
         toaster.create({ title: 'Success', description: resp?.message, type: 'success', duration: 7000 });
-        reset();
       } else {
         toaster.create({ title: 'Error', description: resp?.message, type: 'error', duration: 7000 });
       }
