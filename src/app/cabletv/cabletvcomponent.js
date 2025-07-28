@@ -213,7 +213,7 @@ export default function CableTvComponent({user}) {
   const handleConfirmedSubmit = (data) => { 
 
         setOpen(false);
-        setLoading(true);
+        setIsLoading(true);
         const formData = new URLSearchParams()
         const addon_price = selectedAddons ? parseInt(selectedAddons?.price) : 0;
         const cable_price = selectedPlan?.price;
@@ -243,7 +243,7 @@ export default function CableTvComponent({user}) {
             body: formData.toString(),
         })
 
-        setLoading(false);
+        setIsLoading(false);
 
         if (!response.ok) {
 
@@ -659,6 +659,7 @@ export default function CableTvComponent({user}) {
                 type="submit"
                 size="md"
                 w="full"
+                loading={isLoading}
             >
                 Continue
             </Button>
