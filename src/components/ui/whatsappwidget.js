@@ -20,7 +20,7 @@ const WhatsappWidget = () => {
         marginLeft: 20,
         marginRight: 20,
         btnPosition: "right",
-        whatsAppNumber: "234808270997",
+        whatsAppNumber: "2348082709997",
         welcomeMessage: "Good day, Elite Support",
         zIndex: 999999,
         btnColorScheme: "light",
