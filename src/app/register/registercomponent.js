@@ -188,7 +188,7 @@ export default function RegisterComponent() {
                   placeholder="Enter sponsor username"
                   color="black"
                   borderColor="#9ca3af"
-                  value={userType}
+                  value={userType || ""}
                 />
                 </InputGroup>
               </Field.Root>
