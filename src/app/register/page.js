@@ -30,7 +30,7 @@ export const metadata = {
     siteName: "Elite Global Network",
     images: [
       {
-        url: "https://eliteglobalnetwork.com.ng/elite_png.pngg",
+        url: "https://eliteglobalnetwork.com.ng/elite_png.png",
         width: 1200,
         height: 630,
         alt: "Join Elite Global Network - Register for mobile services",
