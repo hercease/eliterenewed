@@ -311,7 +311,6 @@ export default function TransactionComponent({ user }) {
         </Stack>
 
         {/* Transaction Details Dialog */}
-              <VStack alignItems="start">
                   <Dialog.Root
                     colorPalette="gray"
                     placement="center"
@@ -370,7 +369,6 @@ export default function TransactionComponent({ user }) {
                       </Dialog.Positioner>
                     </Portal>
                   </Dialog.Root>
-                </VStack>
 
         {/* Pagination */}
         {totalTransactions > 0 && (
