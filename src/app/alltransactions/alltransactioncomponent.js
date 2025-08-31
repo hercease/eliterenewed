@@ -236,6 +236,8 @@ export default function TransactionComponent({ user }) {
 
       <NavBar isAdmin={userdetails?.data.isAdmin} name={userdetails?.data.username} />
 
+      
+
       <Box
         p={6}
         w="full"
@@ -311,64 +313,7 @@ export default function TransactionComponent({ user }) {
         </Stack>
 
         {/* Transaction Details Dialog */}
-                  <Dialog.Root
-                    colorPalette="gray"
-                    placement="center"
-                    size="full"
-                    closeOnInteractOutside={false}
-                    motionPreset="slide-in-bottom"
-                    lazyMount
-                    open={open}
-                    onOpenChange={(e) => setOpen(e.open)}
-                  >
-                    <Portal>
-                      <Dialog.Backdrop />
-                      <Dialog.Positioner>
-                        <Dialog.Content>
-                          <Dialog.Header>
-                            <Dialog.Title>Transaction Details</Dialog.Title>
-                          </Dialog.Header>
-                          <Dialog.Body pb="8">
-                            <DataList.Root orientation="horizontal">
-                              <DataList.Item>
-                                <DataList.ItemLabel>Status</DataList.ItemLabel>
-                                <DataList.ItemValue>
-                                  <StatusBadge status={selectedTransaction?.status} />
-                                </DataList.ItemValue>
-                              </DataList.Item>
-                              <DataList.Item>
-                                <DataList.ItemLabel>Type</DataList.ItemLabel>
-                                <DataList.ItemValue>{selectedTransaction?.description}</DataList.ItemValue>
-                              </DataList.Item>
-                              <DataList.Item>
-                                <DataList.ItemLabel>Amount</DataList.ItemLabel>
-                                <DataList.ItemValue>₦{selectedTransaction?.amount?.toLocaleString()}</DataList.ItemValue>
-                              </DataList.Item>
-                              <DataList.Item>
-                                <DataList.ItemLabel>Description</DataList.ItemLabel>
-                                <DataList.ItemValue>{selectedTransaction?.comment}</DataList.ItemValue>
-                              </DataList.Item>
-                              <DataList.Item>
-                                <DataList.ItemLabel>Date</DataList.ItemLabel>
-                                <DataList.ItemValue>
-                                  {selectedTransaction?.date && formatDateWithOrdinal(selectedTransaction.date)}
-                                </DataList.ItemValue>
-                              </DataList.Item>
-                              <DataList.Item>
-                                <DataList.ItemLabel>Api</DataList.ItemLabel>
-                                <DataList.ItemValue>
-                                  {selectedTransaction?.api_type && formatDateWithOrdinal(selectedTransaction.api_type)}
-                                </DataList.ItemValue>
-                              </DataList.Item>
-                            </DataList.Root>
-                          </Dialog.Body>
-                          <Dialog.CloseTrigger asChild>
-                            <CloseButton size="sm" />
-                          </Dialog.CloseTrigger>
-                        </Dialog.Content>
-                      </Dialog.Positioner>
-                    </Portal>
-                  </Dialog.Root>
+                  
 
         {/* Pagination */}
         {totalTransactions > 0 && (
