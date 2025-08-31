@@ -31,6 +31,8 @@ import {
   FiBook,
   FiTv,
   FiSmartphone,
+  FiCreditCard,
+  FiUser
 } from 'react-icons/fi'
 import { useState, useMemo, useEffect, useCallback } from 'react'
 import NavBar from '@/components/ui/sidebar'
@@ -44,7 +46,8 @@ const SERVICE_ICONS = {
   Electricity: FiZap,
   Education: FiBook,
   Cable: FiTv,
-  Fund: FiTv,
+  Fund: FiCreditCard,
+  Recruit: FiUser,
 }
 
 const STATUS_COLORS = {
@@ -236,8 +239,6 @@ export default function TransactionComponent({ user }) {
 
       <NavBar isAdmin={userdetails?.data.isAdmin} name={userdetails?.data.username} />
 
-      
-
       <Box
         p={6}
         w="full"
@@ -313,7 +314,66 @@ export default function TransactionComponent({ user }) {
         </Stack>
 
         {/* Transaction Details Dialog */}
-                  
+              <VStack alignItems="start">
+                  <Dialog.Root
+                    colorPalette="gray"
+                    placement="center"
+                    size="full"
+                    closeOnInteractOutside={false}
+                    motionPreset="slide-in-bottom"
+                    lazyMount
+                    open={open}
+                    onOpenChange={(e) => setOpen(e.open)}
+                  >
+                    <Portal>
+                      <Dialog.Backdrop />
+                      <Dialog.Positioner>
+                        <Dialog.Content>
+                          <Dialog.Header>
+                            <Dialog.Title>Transaction Details</Dialog.Title>
+                          </Dialog.Header>
+                          <Dialog.Body pb="8">
+                            <DataList.Root orientation="horizontal">
+                              <DataList.Item>
+                                <DataList.ItemLabel>Status</DataList.ItemLabel>
+                                <DataList.ItemValue>
+                                  <StatusBadge status={selectedTransaction?.status} />
+                                </DataList.ItemValue>
+                              </DataList.Item>
+                              <DataList.Item>
+                                <DataList.ItemLabel>Type</DataList.ItemLabel>
+                                <DataList.ItemValue>{selectedTransaction?.description}</DataList.ItemValue>
+                              </DataList.Item>
+                              <DataList.Item>
+                                <DataList.ItemLabel>Amount</DataList.ItemLabel>
+                                <DataList.ItemValue>₦{selectedTransaction?.amount?.toLocaleString()}</DataList.ItemValue>
+                              </DataList.Item>
+                              <DataList.Item>
+                                <DataList.ItemLabel>Description</DataList.ItemLabel>
+                                <DataList.ItemValue>{selectedTransaction?.comment}</DataList.ItemValue>
+                              </DataList.Item>
+                              <DataList.Item>
+                                <DataList.ItemLabel>Date</DataList.ItemLabel>
+                                <DataList.ItemValue>
+                                  {selectedTransaction?.date && formatDateWithOrdinal(selectedTransaction.date)}
+                                </DataList.ItemValue>
+                              </DataList.Item>
+                              <DataList.Item>
+                                <DataList.ItemLabel>Api</DataList.ItemLabel>
+                                <DataList.ItemValue>
+                                  {selectedTransaction?.api_type && formatDateWithOrdinal(selectedTransaction.api_type)}
+                                </DataList.ItemValue>
+                              </DataList.Item>
+                            </DataList.Root>
+                          </Dialog.Body>
+                          <Dialog.CloseTrigger asChild>
+                            <CloseButton size="sm" />
+                          </Dialog.CloseTrigger>
+                        </Dialog.Content>
+                      </Dialog.Positioner>
+                    </Portal>
+                  </Dialog.Root>
+                </VStack>
 
         {/* Pagination */}
         {totalTransactions > 0 && (

@@ -45,7 +45,8 @@ const SERVICE_ICONS = {
   Electricity: FiZap,
   Education: FiBook,
   Cable: FiTv,
-  Fund: FiDollarSign,
+  Fund: FiCreditCard,
+  Recruit: FiUser,
 }
 
 export default function MyTransactionComponent({ user }) {
