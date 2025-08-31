@@ -361,7 +361,7 @@ export default function TransactionComponent({ user }) {
                               <DataList.Item>
                                 <DataList.ItemLabel>Api</DataList.ItemLabel>
                                 <DataList.ItemValue>
-                                  {selectedTransaction?.api_type && formatDateWithOrdinal(selectedTransaction.api_type)}
+                                  {selectedTransaction?.api_type && selectedTransaction.api_type}
                                 </DataList.ItemValue>
                               </DataList.Item>
                             </DataList.Root>
