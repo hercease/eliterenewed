@@ -286,7 +286,7 @@ export default function TransactionComponent({ user }) {
 
                 <Avatar.Root size="xs" mr={2}>
                   <Avatar.Fallback>
-                    <Icon as={SERVICE_ICONS[tx.type]} boxSize={3} />
+                    <Icon as={SERVICE_ICONS[tx.type] || FiDollarSign} boxSize={3} />
                   </Avatar.Fallback>
                 </Avatar.Root>
 
