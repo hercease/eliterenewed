@@ -15,7 +15,7 @@ export default function PushPrompt({ user }) {
 }
 
 async function askPermissionAndSubscribe(user) {
-  if (localStorage.getItem('pushSubscribed') === 'true') return;
+  //if (localStorage.getItem('pushSubscribed') === 'true') return;
 
   const permission = await Notification.requestPermission();
   if (permission !== 'granted') return;
