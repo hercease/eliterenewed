@@ -31,8 +31,9 @@ import {
   FiBook,
   FiTv,
   FiSmartphone,
-  FiDollarSign,
   FiCreditCard,
+  FiUser,
+  FiDollarSign
 } from 'react-icons/fi'
 import { useState, useMemo, useEffect, useCallback } from 'react'
 import NavBar from '@/components/ui/sidebar'
