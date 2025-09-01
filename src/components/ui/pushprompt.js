@@ -41,7 +41,7 @@ async function askPermissionAndSubscribe(user) {
 
     const result = await response.json();
 
-    if (result.status === true) {
+    if (result.status) {
       localStorage.setItem('pushSubscribed', 'true');
 
       new Notification("Congratulations!", {
