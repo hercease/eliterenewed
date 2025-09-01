@@ -30,6 +30,8 @@ async function askPermissionAndSubscribe(user) {
   payload.append('subscription', JSON.stringify(subscription));
   payload.append('username', user);
 
+  console.log(payload.toString());
+
   try {
     const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/registersubscription`, {
       method: 'POST',
