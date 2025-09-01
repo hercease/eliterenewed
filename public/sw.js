@@ -67,6 +67,88 @@ if (!self.define) {
     });
   };
 }
+
+// ===== ADD PUSH NOTIFICATION FUNCTIONALITY BELOW =====
+// Push event handler
+self.addEventListener('push', function(event) {
+  console.log('Push event received:', event);
+  
+  if (event.data) {
+    try {
+      const data = event.data.json();
+      const options = {
+        body: data.body || 'New notification',
+        icon: data.icon || '/icons/android/android-launchericon-96-96.png',
+        badge: '/icons/android/android-launchericon-96-96.png',
+        vibrate: [200, 100, 200],
+        tag: 'push-notification',
+        data: data // Pass original data for click handling
+      };
+      
+      event.waitUntil(
+        self.registration.showNotification(data.title || 'Notification', options)
+      );
+    } catch (error) {
+      console.error('Error handling push event:', error);
+      // Fallback for non-JSON data or text data
+      const text = event.data.text();
+      event.waitUntil(
+        self.registration.showNotification('Notification', {
+          body: text || 'You have a new message',
+          icon: '/icons/android/android-launchericon-96-96.png',
+          badge: '/icons/android/android-launchericon-96-96.png'
+        })
+      );
+    }
+  }
+});
+
+// Notification click handler
+self.addEventListener('notificationclick', function(event) {
+  console.log('Notification clicked:', event.notification);
+  event.notification.close();
+  
+  // Handle click action based on notification data
+  const notificationData = event.notification.data;
+  let urlToOpen = '/';
+  
+  if (notificationData && notificationData.url) {
+    urlToOpen = notificationData.url;
+  }
+  
+  event.waitUntil(
+    clients.matchAll({
+      type: 'window',
+      includeUncontrolled: true
+    }).then(function(clientList) {
+      // Check if there's already a window open with the target URL
+      for (const client of clientList) {
+        if (client.url === urlToOpen && 'focus' in client) {
+          return client.focus();
+        }
+      }
+      
+      // If no client found, open a new window
+      if (clients.openWindow) {
+        return clients.openWindow(urlToOpen);
+      }
+    })
+  );
+});
+
+// Push subscription change handler (optional but recommended)
+self.addEventListener('pushsubscriptionchange', function(event) {
+  console.log('Push subscription changed:', event);
+  // You can handle subscription renewal here if needed
+  event.waitUntil(
+    Promise.resolve().then(() => {
+      // Implement subscription renewal logic if required
+      console.log('Subscription changed, may need to update server');
+    })
+  );
+});
+
+// ===== KEEP THE ORIGINAL WORKBOX CODE BELOW =====
 define(['./workbox-e43f5367'], (function (workbox) { 'use strict';
 
   importScripts();
