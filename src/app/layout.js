@@ -21,6 +21,7 @@ const geistMono = Geist_Mono({
 export default async function RootLayout({ children }) {
   const cookieStore = await cookies();
   const token = cookieStore.get('elitetoken')?.value;
+  console.log(token);
 
   return (
       <html className={`${geistSans.variable} ${geistMono.variable}`} suppressHydrationWarning lang="en">
