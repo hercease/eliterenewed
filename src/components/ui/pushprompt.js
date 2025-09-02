@@ -49,7 +49,7 @@ async function askPermissionAndSubscribe(user) {
     const existingSubscription = await reg.pushManager.getSubscription();
     
     if (existingSubscription) {
-      //console.log('Already subscribed to push notifications');
+      console.log('Already subscribed to push notifications');
       return;
     }
 
